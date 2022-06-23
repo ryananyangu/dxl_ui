@@ -1,24 +1,40 @@
-import logo from './logo.svg';
-import './App.css';
+import { Container, Row, Col, Card } from "react-bootstrap";
+import IncomeForm from "./components/basicform";
+import CodeEditor from "./components/CodeEditor";
+import DropDownPrepo from "./components/DropDownPrepo";
+import MapInput from "./components/MapInputx";
+import "bootstrap/dist/css/bootstrap.min.css";
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Container fluid>
+      <br />
+
+      <Row>
+        <Col>
+          <IncomeForm />
+        </Col>
+        <Col>
+          <DropDownPrepo lable={"Map Incoming to Outgoing"} />
+        </Col>
+        <Col>
+          <MapInput />
+        </Col>
+      </Row>
+      <br />
+      <Row>
+        <Col>
+          <Card>
+            <CodeEditor />
+          </Card>
+        </Col>
+        <Col>
+          <Card>
+            <CodeEditor />
+          </Card>
+        </Col>
+      </Row>
+    </Container>
   );
 }
 
