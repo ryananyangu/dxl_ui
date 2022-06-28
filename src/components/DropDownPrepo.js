@@ -1,36 +1,39 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button, Row, Col, Card } from "react-bootstrap";
 import CustomDropdown from "./CustomDropDown";
 import { ListSelected } from "./ListSelected";
 
-const DropDownPrepo = (props) => {
+const DropDownPrepo = ({ data, lable }) => {
   const [selectedInData, setSelectedInData] = useState(0);
   const [selectedOutData, setSelectedOutData] = useState(0);
-  // const [mapping, setMapping] = useState(["Name", "value"]);
-  let mappped = [];
+  const [mapping, setMapping] = useState({});
 
-  let data = {
-    terminalMsgID: "payerTransactionID",
-    msgID: "payerTransactionID",
-    documentTypeID: "paymentExtraData.documentTypeID",
-    clientNumber: "accountNumber",
-    entityNumber: "paymentExtraData.entityNumber",
-    documentYear: "paymentExtraData.documentYear",
-    documentNumber: "paymentExtraData.documentYear",
-    clientName: "customerName",
-    purchaseValue: "amount",
-  };
+  useEffect(() => {});
 
   let outdatalist = Object.keys(data);
   let indatalist = Object.values(data);
 
-  // const handleAddMapping = (e) => {
-  //   SelectionList.push(mapping);
-  // };
+  const handleAddMapping = (e) => {
+    let indata = indatalist[selectedInData];
+    let outdata = outdatalist[selectedOutData];
+    let mappped = mapping;
+    mappped[indata] = outdata;
+    setMapping(mappped);
+    setSelectedInData(0);
+    setSelectedOutData(0);
+  };
+
+  const handleRemove = (itemName) => {
+    let tmp = mapping;
+    delete tmp[itemName];
+    setMapping(tmp);
+    setSelectedInData(0);
+    setSelectedOutData(0);
+  };
 
   return (
     <Card>
-      <Card.Header>{props.lable}</Card.Header>
+      <Card.Header>{lable}</Card.Header>
       <Card.Body>
         <Row>
           <Col>
@@ -51,12 +54,7 @@ const DropDownPrepo = (props) => {
             <Button
               variant="success"
               onClick={(e) => {
-                mappped.push([
-                  indatalist[selectedInData],
-                  outdatalist[selectedOutData],
-                ]);
-                // console.log(mappped);
-                // handleAddMapping(e);
+                handleAddMapping(e);
               }}
             >
               +
@@ -64,9 +62,12 @@ const DropDownPrepo = (props) => {
           </Col>
         </Row>
         <hr />
-        {/* <ListSelected items={SelectionList} /> */}
-        {/* FIXME: make sure to increase values in this everytime a click happens */}
+        <ListSelected items={mapping} func={handleRemove} />
+        {/* FIXME: handle remove doesnt update the UI render */}
       </Card.Body>
+      <Card.Footer>
+        <Button>Done</Button>
+      </Card.Footer>
     </Card>
   );
 };

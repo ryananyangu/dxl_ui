@@ -3,20 +3,18 @@ import React from "react";
 import Editor from "@monaco-editor/react";
 import { Card, Button } from "react-bootstrap";
 
-export default function CodeEditor() {
+export default function CodeEditor({ lang, header, data }) {
   return (
     <Card>
-      <Card.Header>Sample Incomming request and outgoing</Card.Header>
+      <Card.Header>{header}</Card.Header>
       <Card.Body>
         <Editor
           height="50vh"
-          defaultLanguage="json"
-          defaultValue='{ "Name" :"John Doe"}'
+          defaultLanguage={lang}
+          defaultValue={data}
           theme="vs-dark"
         />
-        <Button variant="primary" type="submit">
-          Send to Process or Convert to json
-        </Button>
+        <Button variant="primary">Convert code</Button>
       </Card.Body>
     </Card>
   );

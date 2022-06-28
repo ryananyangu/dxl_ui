@@ -1,50 +1,48 @@
 import { useState } from "react";
-import { Form, Button, Row, Col, Card } from "react-bootstrap";
+import { Button, Card, Col, Form, Row } from "react-bootstrap";
+import CustomDropdown from "./CustomDropDown";
 import { ListSelected } from "./ListSelected";
 
-const MapInput = ({ data, lable }) => {
-  const [headerName, setHeaderName] = useState("");
-  const [headerValue, setHeaderValue] = useState("");
+export const StaticInput = ({ data, lable }) => {
+  const [selectedInput, setSelectedInput] = useState(0);
+  const [staticValue, setStaticValue] = useState("");
+
   const [mapping, setMapping] = useState(data);
 
   const handleAddMapping = (e) => {
     let mappped = mapping;
-    mappped[headerName] = headerValue;
+    mappped[selectedInput] = staticValue;
     setMapping(mappped);
-    setHeaderName("");
-    setHeaderValue("");
+    setSelectedInput(0);
+    setStaticValue("");
   };
 
   const handleRemove = (itemName) => {
     let tmp = mapping;
     delete tmp[itemName];
     setMapping(tmp);
-    setHeaderName("");
-    setHeaderValue("");
+    setSelectedInput(0);
+    setStaticValue("");
   };
-
   return (
     <Card>
       <Card.Header>{lable}</Card.Header>
       <Card.Body>
         <Row>
           <Col>
-            <Form.Control
-              type="text"
-              placeholder="Header name"
-              value={headerName}
-              onChange={(e) => {
-                setHeaderName(e.target.value);
-              }}
+            <CustomDropdown
+              items={Object.keys(data)}
+              func={setSelectedInput}
+              lable={"Constant Input values"}
             />
           </Col>
           <Col>
             <Form.Control
               type="text"
               placeholder="Header value"
-              value={headerValue}
+              value={staticValue}
               onChange={(e) => {
-                setHeaderValue(e.target.value);
+                setStaticValue(e.target.value);
               }}
             />
           </Col>
@@ -60,7 +58,7 @@ const MapInput = ({ data, lable }) => {
           </Col>
         </Row>
         <hr />
-        <ListSelected items={mapping} func={handleRemove} />
+        <ListSelected items={data} func={handleRemove} />
       </Card.Body>
       <Card.Footer>
         <Button>Done</Button>
@@ -68,5 +66,3 @@ const MapInput = ({ data, lable }) => {
     </Card>
   );
 };
-
-export default MapInput;

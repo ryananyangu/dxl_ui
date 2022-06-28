@@ -1,16 +1,19 @@
 import { SelectedItem } from "./SelectedItem";
 
-export const ListSelected = (props) => {
-  console.log(props.items);
+export const ListSelected = ({ items, func }) => {
   return (
     <>
-      {/* {props.items.map((item, index) => {
-        let itemName = Object.keys(item)[0];
-        let itemValue = Object.values(item)[0];
+      {Object.keys(items).map((item, index) => {
+        // console.log(func);
         return (
-          <SelectedItem key={index} itemName={itemName} itemValue={itemValue} />
+          <SelectedItem
+            key={index}
+            itemName={item}
+            itemValue={items[item]}
+            func={func}
+          />
         );
-      })} */}
+      })}
     </>
   );
 };

@@ -12,7 +12,14 @@ export const SelectedItem = (props) => {
           <div>{props.itemValue}</div>
         </Col>
         <Col md={2}>
-          <Button variant="danger">-</Button>
+          <Button
+            variant="danger"
+            onClick={() => {
+              props.func(props.itemName);
+            }}
+          >
+            -
+          </Button>
         </Col>
       </Row>
       <hr />
