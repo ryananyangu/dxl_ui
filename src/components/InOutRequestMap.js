@@ -3,7 +3,7 @@ import { Button, Row, Col, Card } from "react-bootstrap";
 import CustomDropdown from "./CustomDropDown";
 import { ListSelected } from "./ListSelected";
 
-const DropDownPrepo = ({ data, lable }) => {
+const InOutRequestMap = ({ data, lable }) => {
   const [selectedInData, setSelectedInData] = useState(0);
   const [selectedOutData, setSelectedOutData] = useState(0);
   const [mapping, setMapping] = useState({});
@@ -24,7 +24,7 @@ const DropDownPrepo = ({ data, lable }) => {
   };
 
   const handleRemove = (itemName) => {
-    let tmp = mapping;
+    let tmp = { ...mapping };
     delete tmp[itemName];
     setMapping(tmp);
     setSelectedInData(0);
@@ -72,4 +72,4 @@ const DropDownPrepo = ({ data, lable }) => {
   );
 };
 
-export default DropDownPrepo;
+export default InOutRequestMap;

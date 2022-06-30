@@ -18,7 +18,7 @@ export const StaticInput = ({ data, lable }) => {
   };
 
   const handleRemove = (itemName) => {
-    let tmp = mapping;
+    let tmp = { ...mapping };
     delete tmp[itemName];
     setMapping(tmp);
     setSelectedInput(0);

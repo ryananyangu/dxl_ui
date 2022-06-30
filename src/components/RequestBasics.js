@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Form, Button, Card } from "react-bootstrap";
 
-export default function IncomeForm({ data }) {
+export default function RequestBasics({ data, lable }) {
   const [method, setMethod] = useState(data["method"]);
   const [in_type, setIn_type] = useState(data["in_type"]);
   const [out_type, setOut_type] = useState(data["out_type"]);
@@ -10,7 +10,7 @@ export default function IncomeForm({ data }) {
 
   return (
     <Card>
-      <Card.Header>Core Setup form</Card.Header>
+      <Card.Header>{lable}</Card.Header>
       <Card.Body>
         <Form>
           <Form.Group className="mb-3" controlId="">

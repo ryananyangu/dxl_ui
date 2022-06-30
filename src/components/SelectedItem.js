@@ -1,21 +1,21 @@
 import { Col, Row, Button } from "react-bootstrap";
 
-export const SelectedItem = (props) => {
+export const SelectedItem = ({ itemName, itemValue, func }) => {
   return (
     <>
       <Row>
         <Col>
-          <div>{props.itemName}</div>
+          <div>{itemName}</div>
         </Col>
 
         <Col>
-          <div>{props.itemValue}</div>
+          <div>{itemValue}</div>
         </Col>
         <Col md={2}>
           <Button
             variant="danger"
             onClick={() => {
-              props.func(props.itemName);
+              func(itemName);
             }}
           >
             -

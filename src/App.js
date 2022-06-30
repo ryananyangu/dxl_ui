@@ -1,10 +1,11 @@
-import { Container, Row, Col, Card, Tab, Nav } from "react-bootstrap";
-import IncomeForm from "./components/basicform";
+import { Container, Row, Col, Tab, Nav } from "react-bootstrap";
+import RequestBasics from "./components/RequestBasics";
 import CodeEditor from "./components/CodeEditor";
-import DropDownPrepo from "./components/DropDownPrepo";
-import MapInput from "./components/MapInputx";
+import InOutRequestMap from "./components/InOutRequestMap";
+import HeaderSetup from "./components/HeaderSetup";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { StaticInput } from "./components/StaticsInput";
+import OutResponseChecker from "./components/OutResponseChecker";
 
 function App() {
   let dynamicAttrMap = {
@@ -139,6 +140,7 @@ function App() {
   };
 
   let outSuccessDef = {
+    // type can be payload or http status
     type: "payload",
     code: "0",
     path: "Envelope.Body.SubmitSMResponse.smResponse.commandStatus",
@@ -146,136 +148,99 @@ function App() {
 
   return (
     <Container fluid>
+      <br />
       <Tab.Container id="left-tabs-example" defaultActiveKey="first">
         <Row>
-          <Col sm={3}>
+          <Col sm={2}>
             <Nav variant="pills" className="flex-column">
               <Nav.Item>
                 <Nav.Link eventKey="first">Requests Basics</Nav.Link>
               </Nav.Item>
               <Nav.Item>
-                <Nav.Link eventKey="second">Headers Settup</Nav.Link>
+                <Nav.Link eventKey="second">Headers Setup</Nav.Link>
               </Nav.Item>
               <Nav.Item>
-                <Nav.Link eventKey="third">Incoming Request Sample</Nav.Link>
+                <Nav.Link eventKey="third">In Request</Nav.Link>
               </Nav.Item>
               <Nav.Item>
-                <Nav.Link eventKey="fourth">Sample outgoing request</Nav.Link>
+                <Nav.Link eventKey="fourth">Out request</Nav.Link>
               </Nav.Item>
               <Nav.Item>
-                <Nav.Link eventKey="fifth">Tab 2</Nav.Link>
+                <Nav.Link eventKey="fifth">In to Out Request Map</Nav.Link>
               </Nav.Item>
               <Nav.Item>
-                <Nav.Link eventKey="sixth">Tab 2</Nav.Link>
+                <Nav.Link eventKey="sixth">Statics Map</Nav.Link>
               </Nav.Item>
               <Nav.Item>
-                <Nav.Link eventKey="seventh">Tab 2</Nav.Link>
+                <Nav.Link eventKey="seventh">Out Response</Nav.Link>
               </Nav.Item>
               <Nav.Item>
-                <Nav.Link eventKey="eigth">Tab 2</Nav.Link>
+                <Nav.Link eventKey="eigth">In Response</Nav.Link>
               </Nav.Item>
               <Nav.Item>
-                <Nav.Link eventKey="nineth">Tab 2</Nav.Link>
+                <Nav.Link eventKey="nineth">Out to In Response Map</Nav.Link>
               </Nav.Item>
               <Nav.Item>
-                <Nav.Link eventKey="tenth">Tab 2</Nav.Link>
+                <Nav.Link eventKey="tenth">Test Config</Nav.Link>
               </Nav.Item>
             </Nav>
           </Col>
-          <Col sm={9}>
+          <Col sm={8}>
             <Tab.Content>
               <Tab.Pane eventKey="first">
-                <IncomeForm data={reqDefaultVals} />
+                <RequestBasics data={reqDefaultVals} lable={"Request Basics"} />
               </Tab.Pane>
               <Tab.Pane eventKey="second">
-                <MapInput
-                  data={headersMapping}
-                  lable={"Setup out going headers"}
-                />
+                <HeaderSetup data={headersMapping} lable={"Headers Setup"} />
               </Tab.Pane>
               <Tab.Pane eventKey="third">
                 <CodeEditor
                   lang={reqDefaultVals.in_type}
-                  header={"Incoming Request"}
+                  header={"In Request"}
                   data={incomingData}
                 />
               </Tab.Pane>
               <Tab.Pane eventKey="fourth">
                 <CodeEditor
                   lang={reqDefaultVals.out_type}
-                  header={"Outgoing Request"}
+                  header={"Out Request"}
                   data={outReqTemplate}
                 />
               </Tab.Pane>
               <Tab.Pane eventKey="fifth">
-                <DropDownPrepo
-                  lable={"Map Incoming to Outgoing"}
+                <InOutRequestMap
+                  lable={"In to Out Request Map"}
                   data={dynamicAttrMap}
                 />
               </Tab.Pane>
               <Tab.Pane eventKey="sixth">
-                <StaticInput
-                  data={staticData}
-                  lable={"Static values mapping to values"}
-                />
+                <StaticInput data={staticData} lable={"Statics Setup"} />
               </Tab.Pane>
               <Tab.Pane eventKey="seventh">
                 <CodeEditor
                   lang={reqDefaultVals.out_type}
-                  header={"Final response from Outgoing api Request"}
+                  header={"Out Response"}
                   data={apiResponsestring}
                 />
               </Tab.Pane>
-              <Tab.Pane eventKey="eigth">{/* <Sonnet /> */}</Tab.Pane>
-              <Tab.Pane eventKey="nineth">{/* <Sonnet /> */}</Tab.Pane>
-              <Tab.Pane eventKey="tenth">{/* <Sonnet /> */}</Tab.Pane>
+              <Tab.Pane eventKey="eigth">
+                <CodeEditor
+                  lang={reqDefaultVals.in_type}
+                  header={"In Response"}
+                  data={receivedReqTemplate}
+                />
+              </Tab.Pane>
+              <Tab.Pane eventKey="nineth">
+                <OutResponseChecker
+                  data={outSuccessDef}
+                  lable={"Out to In Response Map"}
+                />
+              </Tab.Pane>
+              <Tab.Pane eventKey="tenth">Comming soon !!!</Tab.Pane>
             </Tab.Content>
           </Col>
         </Row>
       </Tab.Container>
-      <br />
-      <Row>
-        <Col></Col>
-        <Col></Col>
-        <Col></Col>
-        <Col></Col>
-      </Row>
-      <br />
-      <Row>
-        <Col>
-          <Card>
-            {/* <CodeEditor
-              lang={reqDefaultVals.in_type}
-              header={"Incoming Request"}
-              data={incomingData}
-            /> */}
-          </Card>
-        </Col>
-        <Col>
-          <Card>
-            {/* <CodeEditor
-              lang={reqDefaultVals.out_type}
-              header={"Outgoing Request"}
-              data={outReqTemplate}
-            /> */}
-          </Card>
-        </Col>
-      </Row>
-      <br />
-      <Row>
-        <Col>
-          <Card>
-            {/* <CodeEditor
-              lang={reqDefaultVals.in_type}
-              header={"Final Response to initial Request"}
-              data={receivedReqTemplate}
-            /> */}
-          </Card>
-        </Col>
-        <Col>
-          <Card></Card>
-        </Col>
-      </Row>
     </Container>
   );
 }

@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Form, Button, Row, Col, Card } from "react-bootstrap";
 import { ListSelected } from "./ListSelected";
 
-const MapInput = ({ data, lable }) => {
+const HeaderSetup = ({ data, lable }) => {
   const [headerName, setHeaderName] = useState("");
   const [headerValue, setHeaderValue] = useState("");
   const [mapping, setMapping] = useState(data);
@@ -16,7 +16,7 @@ const MapInput = ({ data, lable }) => {
   };
 
   const handleRemove = (itemName) => {
-    let tmp = mapping;
+    let tmp = { ...mapping };
     delete tmp[itemName];
     setMapping(tmp);
     setHeaderName("");
@@ -69,4 +69,4 @@ const MapInput = ({ data, lable }) => {
   );
 };
 
-export default MapInput;
+export default HeaderSetup;
