@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Form, Button, Row, Col, Card } from "react-bootstrap";
 import { ListSelected } from "./ListSelected";
 
-const HeaderSetup = ({ data, lable }) => {
+const HeaderSetup = ({ data, lable, getHeaders }) => {
   const [headerName, setHeaderName] = useState("");
   const [headerValue, setHeaderValue] = useState("");
   const [mapping, setMapping] = useState(data);
@@ -21,6 +21,11 @@ const HeaderSetup = ({ data, lable }) => {
     setMapping(tmp);
     setHeaderName("");
     setHeaderValue("");
+  };
+
+  const onDoneHandler = () => {
+    let tmp = { ...mapping };
+    getHeaders(tmp);
   };
 
   return (
@@ -63,7 +68,7 @@ const HeaderSetup = ({ data, lable }) => {
         <ListSelected items={mapping} func={handleRemove} />
       </Card.Body>
       <Card.Footer>
-        <Button>Done</Button>
+        <Button onClick={onDoneHandler}>Done</Button>
       </Card.Footer>
     </Card>
   );

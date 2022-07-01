@@ -3,7 +3,7 @@ import { Button, Card, Col, Form, Row } from "react-bootstrap";
 import CustomDropdown from "./CustomDropDown";
 import { ListSelected } from "./ListSelected";
 
-export const StaticInput = ({ data, lable }) => {
+export const StaticInput = ({ data, lable, getStatics }) => {
   const [selectedInput, setSelectedInput] = useState(0);
   const [staticValue, setStaticValue] = useState("");
 
@@ -23,6 +23,10 @@ export const StaticInput = ({ data, lable }) => {
     setMapping(tmp);
     setSelectedInput(0);
     setStaticValue("");
+  };
+
+  const onDoneHandler = () => {
+    getStatics({ ...mapping });
   };
   return (
     <Card>
@@ -61,7 +65,7 @@ export const StaticInput = ({ data, lable }) => {
         <ListSelected items={data} func={handleRemove} />
       </Card.Body>
       <Card.Footer>
-        <Button>Done</Button>
+        <Button onClick={onDoneHandler}>Done</Button>
       </Card.Footer>
     </Card>
   );

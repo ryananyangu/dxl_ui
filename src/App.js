@@ -6,88 +6,21 @@ import HeaderSetup from "./components/HeaderSetup";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { StaticInput } from "./components/StaticsInput";
 import OutResponseChecker from "./components/OutResponseChecker";
+import { useState } from "react";
+
+const HTTP_SUCCESS = 200;
+const FLATJSONURL = "http://0.0.0.0:8080/api/v1/process/jsonflatten";
+const XML2FLATJSON = "http://0.0.0.0:8080/api/v1/process/xmltoflatjson";
 
 function App() {
-  let dynamicAttrMap = {
-    terminalMsgID: "payerTransactionID",
-    msgID: "payerTransactionID",
-    documentTypeID: "paymentExtraData.documentTypeID",
-    clientNumber: "accountNumber",
-    entityNumber: "paymentExtraData.entityNumber",
-    documentYear: "paymentExtraData.documentYear",
-    documentNumber: "paymentExtraData.documentYear",
-    clientName: "customerName",
-    purchaseValue: "amount",
+  // Schema
+  let reqBasics = {
+    method: "",
+    in_type: "",
+    out_type: "",
+    url: "",
+    serviceCode: "",
   };
-
-  let headersMapping = {
-    "Content-Type": "text/xml;charset=UTF-8",
-  };
-
-  let incomingData = `{
-    "paymentOverallStatus":"200",
-    "amount":100,
-    "MSISDN":"254722000000",
-    "serviceCode":"FLBDR_254722000000",
-    "paymentMode":"ONLINE",
-    "beepTransactionID":3037981,
-    "payerTransactionID":"HJ87678JHS-01",
-    "accountNumber":"12878345098",
-    "payerClientCode":"FLBDR",
-    "customerName":"John Doe",
-    "datePaymentReceived":"2020-01-01 00:00:00",
-    "statusDescription":"Client has pending payments for processing",
-    "paymentExtraData":{
-        "entityNumber":"1001",
-        "documentTypeID":"1",
-        "documentYear":"2020"
-    },
-    "invoiceExtraData":"",
-    "payerClientID":1,
-    "narration":"Bill payment",
-    "hubCreationDate":"2020-01-01 16:30:48",
-    "invoiceNumber":"",
-    "serviceID":1,
-    "currencyCode":"KES",
-    "statusCode":200
-}`;
-
-  let reqDefaultVals = {
-    method: "POST",
-    in_type: "json",
-    out_type: "xml",
-    url: "https://049b6cbd-12c2-4a3e-bdfe-bb1bbdd79603.mock.pstmn.io/api/v1/process/post/mock/1",
-    serviceCode: "802002",
-  };
-
-  let outReqTemplate = `<?xml version="1.0" encoding="UTF-8"?>
-<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns1="http://topupretail.com/">
-   <SOAP-ENV:Body>
-      <ns1:AquaPayment>
-         <ns1:req>
-            <ns1:terminalMsgID>{terminalMsgID}</ns1:terminalMsgID>
-            <ns1:terminalID>{terminalID}</ns1:terminalID>
-            <ns1:msgID>{msgID}</ns1:msgID>
-            <ns1:authCred>
-               <ns1:opName>{opName}</ns1:opName>
-               <ns1:password>{password}</ns1:password>
-            </ns1:authCred>
-            <ns1:clientNumber>{clientNumber}</ns1:clientNumber>
-            <ns1:entityNumber>{entityNumber}</ns1:entityNumber>
-            <ns1:documentTypeID>{documentTypeID}</ns1:documentTypeID>
-            <ns1:documentYear>{documentYear}</ns1:documentYear>
-            <ns1:documentNumber>{documentNumber}</ns1:documentNumber>
-            <ns1:clientName>{clientName}</ns1:clientName>
-            <ns1:purchaseValue>{purchaseValue}</ns1:purchaseValue>
-            <ns1:receiptFormat>{receiptFormat}</ns1:receiptFormat>
-            <ns1:terminalLocation />
-            <ns1:terminalChannel>{terminalChannel}</ns1:terminalChannel>
-            <ns1:terminalCompanyName>{terminalCompanyName}</ns1:terminalCompanyName>
-            <ns1:terminalOperator>{terminalOperator}</ns1:terminalOperator>
-         </ns1:req>
-      </ns1:AquaPayment>
-   </SOAP-ENV:Body>
-</SOAP-ENV:Envelope>`;
 
   let receivedReqTemplate = `{
     "packet":[
@@ -126,24 +59,113 @@ function App() {
 </Envelope>
 `;
 
-  let staticData = {
-    terminalID: "000000",
-    opName: "ZohariTech",
-    terminalChannel: "Web",
-    receiptFormat: "EN_GB",
-    terminalCompanyName: "Zohari Tech Systems",
-    terminalOperator: "Zohari",
-    password: "Qwerty$123",
-    in_password: "Kenya213456",
-    in_username: "Binaryward",
-    in_success_code: "200",
+  // schema
+  let outSuccessDef = {
+    type: "",
+    code: "",
+    path: "",
   };
 
-  let outSuccessDef = {
-    // type can be payload or http status
-    type: "payload",
-    code: "0",
-    path: "Envelope.Body.SubmitSMResponse.smResponse.commandStatus",
+  const [basics, setBasics] = useState(reqBasics);
+  const [headers, setHeaders] = useState({});
+  const [inRequest, setInRequest] = useState("");
+  const [outRequest, setOutRequest] = useState("");
+  const [staticData, setStaticData] = useState({});
+  const [inRequestKeys, setInRequestKeys] = useState([]);
+  const [outRequestValues, setOutRequestValues] = useState([]);
+  const [IOReqMap, setIORequestMap] = useState({});
+
+  const getBasics = (data) => {
+    setBasics({ ...data });
+  };
+
+  const getHeaders = (data) => {
+    setHeaders({ ...data });
+  };
+
+  const getStatics = (data) => {
+    setStaticData({ ...data });
+  };
+
+  const getIORequestMap = (data) => {
+    setIORequestMap(data);
+    console.log(IOReqMap);
+  };
+  const sendPostRequest = (payload, headers, url) => {
+    let completeresponse = {};
+    try {
+      fetch(url, {
+        method: "POST",
+        body: JSON.stringify({ ...payload }),
+        headers: {
+          ...headers,
+        },
+      }).then((response) => {
+        if (response.status === HTTP_SUCCESS) {
+          response.json().then((result) => {
+            console.log(result);
+            completeresponse = result;
+          });
+        } else {
+          response.text().then((result) => {
+            console.log(result);
+          });
+        }
+      });
+    } catch (error) {
+      console.error(error);
+    }
+    console.log(completeresponse);
+    return completeresponse;
+  };
+  const inRequestProcess = (data) => {
+    let response;
+    setInRequest(data);
+
+    if (basics.in_type === "json") {
+      let process_header = { "Content-Type": "application/json" };
+      response = sendPostRequest(data, process_header, FLATJSONURL);
+    } else if (basics.in_type === "xml") {
+      let process_header = { "Content-Type": "application/xml" };
+      response = sendPostRequest(data, process_header, XML2FLATJSON);
+    } else {
+      // FIXME: Unknown type
+      console.error("Unknown type", basics.in_type);
+    }
+    if (response) {
+      setInRequestKeys([...Object.keys(response)]);
+    } else {
+      // FIXME: Create an error displayer
+      console.error("response empty");
+    }
+  };
+
+  const outRequestProcess = (data) => {
+    let response;
+    setOutRequest(data);
+
+    if (basics.out_type === "json") {
+      let process_header = { "Content-Type": "application/json" };
+      response = sendPostRequest(data, process_header, FLATJSONURL);
+    } else if (basics.out_type === "xml") {
+      let process_header = { "Content-Type": "application/xml" };
+      response = sendPostRequest(data, process_header, XML2FLATJSON);
+    } else {
+      // FIXME: Unknown type
+      console.error("Unknown type", basics);
+      return;
+    }
+    if (response) {
+      setOutRequestValues([...Object.values(response)]);
+    } else {
+      // FIXME: Create an error displayer
+      console.error("response empty", basics);
+      return;
+    }
+
+    // FIXME: update this using keys and values setInOutRequestMap
+
+    console.log(outRequestValues);
   };
 
   return (
@@ -159,12 +181,16 @@ function App() {
               <Nav.Item>
                 <Nav.Link eventKey="second">Headers Setup</Nav.Link>
               </Nav.Item>
-              <Nav.Item>
-                <Nav.Link eventKey="third">In Request</Nav.Link>
-              </Nav.Item>
-              <Nav.Item>
-                <Nav.Link eventKey="fourth">Out request</Nav.Link>
-              </Nav.Item>
+              {basics.in_type && (
+                <Nav.Item>
+                  <Nav.Link eventKey="third">In Request</Nav.Link>
+                </Nav.Item>
+              )}
+              {basics.out_type && (
+                <Nav.Item>
+                  <Nav.Link eventKey="fourth">Out request</Nav.Link>
+                </Nav.Item>
+              )}
               <Nav.Item>
                 <Nav.Link eventKey="fifth">In to Out Request Map</Nav.Link>
               </Nav.Item>
@@ -188,44 +214,65 @@ function App() {
           <Col sm={8}>
             <Tab.Content>
               <Tab.Pane eventKey="first">
-                <RequestBasics data={reqDefaultVals} lable={"Request Basics"} />
+                <RequestBasics
+                  data={basics}
+                  lable={"Request Basics"}
+                  getBasics={getBasics}
+                />
               </Tab.Pane>
               <Tab.Pane eventKey="second">
-                <HeaderSetup data={headersMapping} lable={"Headers Setup"} />
-              </Tab.Pane>
-              <Tab.Pane eventKey="third">
-                <CodeEditor
-                  lang={reqDefaultVals.in_type}
-                  header={"In Request"}
-                  data={incomingData}
+                <HeaderSetup
+                  data={headers}
+                  lable={"Headers Setup"}
+                  getHeaders={getHeaders}
                 />
               </Tab.Pane>
-              <Tab.Pane eventKey="fourth">
-                <CodeEditor
-                  lang={reqDefaultVals.out_type}
-                  header={"Out Request"}
-                  data={outReqTemplate}
-                />
-              </Tab.Pane>
+              {basics.in_type && (
+                <Tab.Pane eventKey="third">
+                  <CodeEditor
+                    lang={basics.in_type}
+                    header={"In Request"}
+                    data={inRequest}
+                    getTransFormedData={inRequestProcess}
+                  />
+                </Tab.Pane>
+              )}
+              {basics.out_type && (
+                <Tab.Pane eventKey="fourth">
+                  <CodeEditor
+                    lang={basics.out_type}
+                    header={"Out Request"}
+                    data={outRequest}
+                    getTransFormedData={outRequestProcess}
+                  />
+                </Tab.Pane>
+              )}
+
               <Tab.Pane eventKey="fifth">
                 <InOutRequestMap
                   lable={"In to Out Request Map"}
-                  data={dynamicAttrMap}
+                  inlist={inRequestKeys}
+                  outlist={outRequestValues}
+                  getIORequestMap={getIORequestMap}
                 />
               </Tab.Pane>
               <Tab.Pane eventKey="sixth">
-                <StaticInput data={staticData} lable={"Statics Setup"} />
+                <StaticInput
+                  data={staticData}
+                  lable={"Statics Setup"}
+                  getStatics={getStatics}
+                />
               </Tab.Pane>
               <Tab.Pane eventKey="seventh">
                 <CodeEditor
-                  lang={reqDefaultVals.out_type}
+                  lang={basics.out_type}
                   header={"Out Response"}
                   data={apiResponsestring}
                 />
               </Tab.Pane>
               <Tab.Pane eventKey="eigth">
                 <CodeEditor
-                  lang={reqDefaultVals.in_type}
+                  lang={basics.in_type}
                   header={"In Response"}
                   data={receivedReqTemplate}
                 />

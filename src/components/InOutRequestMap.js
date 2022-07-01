@@ -1,21 +1,16 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Button, Row, Col, Card } from "react-bootstrap";
 import CustomDropdown from "./CustomDropDown";
 import { ListSelected } from "./ListSelected";
 
-const InOutRequestMap = ({ data, lable }) => {
+const InOutRequestMap = ({ inlist, outlist, lable, getIORequestMap }) => {
   const [selectedInData, setSelectedInData] = useState(0);
   const [selectedOutData, setSelectedOutData] = useState(0);
   const [mapping, setMapping] = useState({});
 
-  useEffect(() => {});
-
-  let outdatalist = Object.keys(data);
-  let indatalist = Object.values(data);
-
   const handleAddMapping = (e) => {
-    let indata = indatalist[selectedInData];
-    let outdata = outdatalist[selectedOutData];
+    let indata = inlist[selectedInData];
+    let outdata = outlist[selectedOutData];
     let mappped = mapping;
     mappped[indata] = outdata;
     setMapping(mappped);
@@ -31,6 +26,10 @@ const InOutRequestMap = ({ data, lable }) => {
     setSelectedOutData(0);
   };
 
+  const onDoneHandler = () => {
+    getIORequestMap({ ...mapping });
+  };
+
   return (
     <Card>
       <Card.Header>{lable}</Card.Header>
@@ -38,14 +37,14 @@ const InOutRequestMap = ({ data, lable }) => {
         <Row>
           <Col>
             <CustomDropdown
-              items={indatalist}
+              items={inlist}
               func={setSelectedInData}
               lable={"Input list"}
             />
           </Col>
           <Col>
             <CustomDropdown
-              items={outdatalist}
+              items={outlist}
               func={setSelectedOutData}
               lable={"Output list"}
             />
@@ -66,7 +65,7 @@ const InOutRequestMap = ({ data, lable }) => {
         {/* FIXME: handle remove doesnt update the UI render */}
       </Card.Body>
       <Card.Footer>
-        <Button>Done</Button>
+        <Button onClick={onDoneHandler}>Done</Button>
       </Card.Footer>
     </Card>
   );
