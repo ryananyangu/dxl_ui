@@ -1,4 +1,4 @@
-import { Container, Row, Col, Tab, Nav } from "react-bootstrap";
+import { Container, Row, Col, Tab, Nav, ProgressBar } from "react-bootstrap";
 import RequestBasics from "./components/RequestBasics";
 import CodeEditor from "./components/CodeEditor";
 import InOutRequestMap from "./components/InOutRequestMap";
@@ -7,6 +7,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { StaticInput } from "./components/StaticsInput";
 import OutResponseChecker from "./components/OutResponseChecker";
 import { useState } from "react";
+import { CustomAlert } from "./components/CustomAlert";
 
 const HTTP_SUCCESS = 200;
 const FLATJSONURL = "http://0.0.0.0:8080/api/v1/process/jsonflatten";
@@ -74,6 +75,7 @@ function App() {
   const [inRequestKeys, setInRequestKeys] = useState([]);
   const [outRequestValues, setOutRequestValues] = useState([]);
   const [IOReqMap, setIORequestMap] = useState({});
+  const [errMsg, setErrMsg] = useState("");
 
   const getBasics = (data) => {
     setBasics({ ...data });
@@ -91,87 +93,98 @@ function App() {
     setIORequestMap(data);
     console.log(IOReqMap);
   };
-  const sendPostRequest = (payload, headers, url) => {
-    let completeresponse = {};
+
+  const sendPostRequest = async (payload, headers, url) => {
+    let final_response = {};
     try {
-      fetch(url, {
+      const response = await fetch(url, {
         method: "POST",
-        body: JSON.stringify({ ...payload }),
-        headers: {
-          ...headers,
-        },
-      }).then((response) => {
-        if (response.status === HTTP_SUCCESS) {
-          response.json().then((result) => {
-            console.log(result);
-            completeresponse = result;
-          });
-        } else {
-          response.text().then((result) => {
-            console.log(result);
-          });
-        }
+        body: payload,
+        headers: headers,
       });
+      console.log(url, response.status);
+      if (response.status === HTTP_SUCCESS) {
+        const result = await response.json();
+        final_response = result;
+      } else {
+        const result = await response.text();
+        setErrMsg(result);
+      }
     } catch (error) {
-      console.error(error);
+      setErrMsg(errMsg);
     }
-    console.log(completeresponse);
-    return completeresponse;
+    return final_response;
   };
-  const inRequestProcess = (data) => {
+  const inRequestProcess = async (data) => {
     let response;
     setInRequest(data);
 
     if (basics.in_type === "json") {
       let process_header = { "Content-Type": "application/json" };
-      response = sendPostRequest(data, process_header, FLATJSONURL);
+      response = await sendPostRequest(data, process_header, FLATJSONURL);
     } else if (basics.in_type === "xml") {
       let process_header = { "Content-Type": "application/xml" };
-      response = sendPostRequest(data, process_header, XML2FLATJSON);
+      response = await sendPostRequest(data, process_header, XML2FLATJSON);
     } else {
-      // FIXME: Unknown type
       console.error("Unknown type", basics.in_type);
     }
     if (response) {
       setInRequestKeys([...Object.keys(response)]);
     } else {
-      // FIXME: Create an error displayer
-      console.error("response empty");
+      setErrMsg("response empty");
     }
   };
 
-  const outRequestProcess = (data) => {
+  const outRequestProcess = async (data) => {
     let response;
     setOutRequest(data);
 
     if (basics.out_type === "json") {
-      let process_header = { "Content-Type": "application/json" };
-      response = sendPostRequest(data, process_header, FLATJSONURL);
+      response = await sendPostRequest(
+        data,
+        { "Content-Type": "application/json" },
+        FLATJSONURL
+      );
     } else if (basics.out_type === "xml") {
-      let process_header = { "Content-Type": "application/xml" };
-      response = sendPostRequest(data, process_header, XML2FLATJSON);
+      response = await sendPostRequest(
+        data,
+        { "Content-Type": "application/xml" },
+        XML2FLATJSON
+      );
     } else {
-      // FIXME: Unknown type
-      console.error("Unknown type", basics);
+      setErrMsg("Unknown type" + basics);
       return;
     }
     if (response) {
+      //
       setOutRequestValues([...Object.values(response)]);
     } else {
-      // FIXME: Create an error displayer
-      console.error("response empty", basics);
+      setErrMsg("Response is empty " + basics);
       return;
     }
-
-    // FIXME: update this using keys and values setInOutRequestMap
-
-    console.log(outRequestValues);
   };
 
   return (
     <Container fluid>
+      {errMsg && (
+        <CustomAlert
+          body={errMsg}
+          variant={"danger"}
+          onClose={() => {
+            setErrMsg("");
+          }}
+        />
+      )}
       <br />
       <Tab.Container id="left-tabs-example" defaultActiveKey="first">
+        <Row>
+          <ProgressBar>
+            <ProgressBar variant="success" now={33} key={1} />
+            <ProgressBar variant="warning" now={33} key={2} />
+            <ProgressBar variant="danger" now={33} key={3} />
+          </ProgressBar>
+        </Row>
+        <br />
         <Row>
           <Col sm={2}>
             <Nav variant="pills" className="flex-column">

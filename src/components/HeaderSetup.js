@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Form, Button, Row, Col, Card } from "react-bootstrap";
+import { Form, Button, Row, Card, InputGroup } from "react-bootstrap";
 import { ListSelected } from "./ListSelected";
 
 const HeaderSetup = ({ data, lable, getHeaders }) => {
@@ -33,7 +33,7 @@ const HeaderSetup = ({ data, lable, getHeaders }) => {
       <Card.Header>{lable}</Card.Header>
       <Card.Body>
         <Row>
-          <Col>
+          <InputGroup>
             <Form.Control
               type="text"
               placeholder="Header name"
@@ -42,8 +42,6 @@ const HeaderSetup = ({ data, lable, getHeaders }) => {
                 setHeaderName(e.target.value);
               }}
             />
-          </Col>
-          <Col>
             <Form.Control
               type="text"
               placeholder="Header value"
@@ -52,8 +50,6 @@ const HeaderSetup = ({ data, lable, getHeaders }) => {
                 setHeaderValue(e.target.value);
               }}
             />
-          </Col>
-          <Col md={2}>
             <Button
               variant="success"
               onClick={(e) => {
@@ -62,7 +58,7 @@ const HeaderSetup = ({ data, lable, getHeaders }) => {
             >
               +
             </Button>
-          </Col>
+          </InputGroup>
         </Row>
         <hr />
         <ListSelected items={mapping} func={handleRemove} />

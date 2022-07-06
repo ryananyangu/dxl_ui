@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Button, Row, Col, Card } from "react-bootstrap";
+import { Button, Row, InputGroup, Card } from "react-bootstrap";
 import CustomDropdown from "./CustomDropDown";
 import { ListSelected } from "./ListSelected";
 
@@ -35,21 +35,17 @@ const InOutRequestMap = ({ inlist, outlist, lable, getIORequestMap }) => {
       <Card.Header>{lable}</Card.Header>
       <Card.Body>
         <Row>
-          <Col>
+          <InputGroup className="mb-3">
             <CustomDropdown
               items={inlist}
               func={setSelectedInData}
               lable={"Input list"}
             />
-          </Col>
-          <Col>
             <CustomDropdown
               items={outlist}
               func={setSelectedOutData}
               lable={"Output list"}
             />
-          </Col>
-          <Col md={2}>
             <Button
               variant="success"
               onClick={(e) => {
@@ -58,7 +54,7 @@ const InOutRequestMap = ({ inlist, outlist, lable, getIORequestMap }) => {
             >
               +
             </Button>
-          </Col>
+          </InputGroup>
         </Row>
         <hr />
         <ListSelected items={mapping} func={handleRemove} />
