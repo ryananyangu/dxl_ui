@@ -1,17 +1,12 @@
-import { Col, Row, Button } from "react-bootstrap";
+import { Row, Button, InputGroup, Form } from "react-bootstrap";
 
 export const SelectedItem = ({ itemName, itemValue, func }) => {
   return (
     <>
       <Row>
-        <Col>
-          <div>{itemName}</div>
-        </Col>
-
-        <Col>
-          <div>{itemValue}</div>
-        </Col>
-        <Col md={2}>
+        <InputGroup>
+          <Form.Control disabled value={itemName} />
+          <Form.Control disabled value={itemValue} />
           <Button
             variant="danger"
             onClick={() => {
@@ -20,7 +15,7 @@ export const SelectedItem = ({ itemName, itemValue, func }) => {
           >
             -
           </Button>
-        </Col>
+        </InputGroup>
       </Row>
       <hr />
     </>

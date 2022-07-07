@@ -9,7 +9,7 @@ export const StaticInput = ({ data, lable, getStatics }) => {
   const [isCustom, setCustom] = useState(false);
   const [customValue, setCustomValue] = useState("");
 
-  const [mapping, setMapping] = useState(data);
+  const [mapping, setMapping] = useState({});
 
   const handleAddMapping = (e) => {
     let mappped = mapping;
@@ -17,10 +17,9 @@ export const StaticInput = ({ data, lable, getStatics }) => {
     if (isCustom) {
       val = customValue;
     } else {
-      val = selectedInput;
+      val = data[selectedInput];
     }
     mappped[val] = staticValue;
-    // mappped[selectedInput] = staticValue;
     setMapping(mappped);
     setSelectedInput(0);
     setStaticValue("");
@@ -51,15 +50,11 @@ export const StaticInput = ({ data, lable, getStatics }) => {
               }}
             />
             {!isCustom ? (
-              <CustomDropdown
-                items={Object.keys(data)}
-                func={setSelectedInput}
-                // lable={"Constant Input values"}
-              />
+              <CustomDropdown items={data} func={setSelectedInput} />
             ) : (
               <Form.Control
                 type="text"
-                placeholder="Custom value"
+                placeholder="Custom static"
                 value={customValue}
                 onChange={(e) => {
                   setCustomValue(e.target.value);
@@ -68,7 +63,7 @@ export const StaticInput = ({ data, lable, getStatics }) => {
             )}
             <Form.Control
               type="text"
-              placeholder="Header value"
+              placeholder="Static value"
               value={staticValue}
               onChange={(e) => {
                 setStaticValue(e.target.value);
@@ -85,7 +80,7 @@ export const StaticInput = ({ data, lable, getStatics }) => {
           </InputGroup>
         </Row>
         <hr />
-        <ListSelected items={data} func={handleRemove} />
+        <ListSelected items={mapping} func={handleRemove} />
       </Card.Body>
       <Card.Footer>
         <Button onClick={onDoneHandler}>Done</Button>
@@ -93,30 +88,3 @@ export const StaticInput = ({ data, lable, getStatics }) => {
     </Card>
   );
 };
-
-// <InputGroup>
-//   <DropdownButton
-//     variant="outline-secondary"
-//     title="Dropdown"
-//     id="input-group-dropdown-3"
-//   >
-//     <Dropdown.Item href="#">Action</Dropdown.Item>
-//     <Dropdown.Item href="#">Another action</Dropdown.Item>
-//     <Dropdown.Item href="#">Something else here</Dropdown.Item>
-//     <Dropdown.Divider />
-//     <Dropdown.Item href="#">Separated link</Dropdown.Item>
-//   </DropdownButton>
-//   <FormControl aria-label="Text input with 2 dropdown buttons" />
-//   <DropdownButton
-//     variant="outline-secondary"
-//     title="Dropdown"
-//     id="input-group-dropdown-4"
-//     align="end"
-//   >
-//     <Dropdown.Item href="#">Action</Dropdown.Item>
-//     <Dropdown.Item href="#">Another action</Dropdown.Item>
-//     <Dropdown.Item href="#">Something else here</Dropdown.Item>
-//     <Dropdown.Divider />
-//     <Dropdown.Item href="#">Separated link</Dropdown.Item>
-//   </DropdownButton>
-// </InputGroup>;

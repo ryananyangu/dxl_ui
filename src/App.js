@@ -8,6 +8,7 @@ import { StaticInput } from "./components/StaticsInput";
 import OutResponseChecker from "./components/OutResponseChecker";
 import { useState } from "react";
 import { CustomAlert } from "./components/CustomAlert";
+import { OutInResponseMap } from "./components/OutInReponseMap";
 
 const HTTP_SUCCESS = 200;
 const FLATJSONURL = "http://0.0.0.0:8080/api/v1/process/jsonflatten";
@@ -75,6 +76,11 @@ function App() {
   const [inRequestKeys, setInRequestKeys] = useState([]);
   const [outRequestValues, setOutRequestValues] = useState([]);
   const [IOReqMap, setIORequestMap] = useState({});
+  const [outResponse, setOutResponse] = useState("");
+  const [inResponse, setInResponse] = useState("");
+  const [OIResponseMap, setOIResponseMap] = useState({});
+  const [inResponseKeys, setInResponseKeys] = useState([]);
+  const [outResponseValues, setOutResponseValues] = useState([]);
   const [errMsg, setErrMsg] = useState("");
 
   const getBasics = (data) => {
@@ -94,8 +100,14 @@ function App() {
     console.log(IOReqMap);
   };
 
+  const getOIResponseMap = (data) => {
+    setOIResponseMap(data);
+    console.log(OIResponseMap);
+  };
+
   const sendPostRequest = async (payload, headers, url) => {
     let final_response = {};
+    let err;
     try {
       const response = await fetch(url, {
         method: "POST",
@@ -108,60 +120,72 @@ function App() {
         final_response = result;
       } else {
         const result = await response.text();
-        setErrMsg(result);
+        err = result;
       }
     } catch (error) {
-      setErrMsg(errMsg);
+      err = error;
     }
-    return final_response;
+    return { response: final_response, error: err };
   };
-  const inRequestProcess = async (data) => {
-    let response;
-    setInRequest(data);
 
-    if (basics.in_type === "json") {
+  const routRequest = async (data, type) => {
+    let response = {};
+    if (type === "json") {
       let process_header = { "Content-Type": "application/json" };
       response = await sendPostRequest(data, process_header, FLATJSONURL);
-    } else if (basics.in_type === "xml") {
+    } else if (type === "xml") {
       let process_header = { "Content-Type": "application/xml" };
       response = await sendPostRequest(data, process_header, XML2FLATJSON);
     } else {
-      console.error("Unknown type", basics.in_type);
+      response.response = "";
+      response.err = "Unknown type" + basics.in_type;
     }
-    if (response) {
-      setInRequestKeys([...Object.keys(response)]);
-    } else {
-      setErrMsg("response empty");
+    return response;
+  };
+
+  const inRequestProcess = async (data) => {
+    const { response, error } = await routRequest(data, basics.in_type);
+
+    if (error) {
+      setErrMsg(error);
+      return;
     }
+    setInRequest(data);
+
+    setInRequestKeys([...Object.keys(response)]);
   };
 
   const outRequestProcess = async (data) => {
-    let response;
-    setOutRequest(data);
+    const { response, error } = await routRequest(data, basics.out_type);
+    if (error) {
+      setErrMsg(error);
+      return;
+    }
 
-    if (basics.out_type === "json") {
-      response = await sendPostRequest(
-        data,
-        { "Content-Type": "application/json" },
-        FLATJSONURL
-      );
-    } else if (basics.out_type === "xml") {
-      response = await sendPostRequest(
-        data,
-        { "Content-Type": "application/xml" },
-        XML2FLATJSON
-      );
-    } else {
-      setErrMsg("Unknown type" + basics);
+    setOutRequest(data);
+    setOutRequestValues([...Object.values(response)]);
+  };
+  const outResponseProcess = async (data) => {
+    const { response, error } = await routRequest(data, basics.out_type);
+    if (error) {
+      setErrMsg(error);
       return;
     }
-    if (response) {
-      //
-      setOutRequestValues([...Object.values(response)]);
-    } else {
-      setErrMsg("Response is empty " + basics);
+
+    setOutResponse(data);
+    setOutResponseValues([...Object.keys(response)]);
+  };
+  const inResponseProcess = async (data) => {
+    console.log(data, basics.in_type);
+    const { response, error } = await routRequest(data, basics.in_type);
+    if (error) {
+      setErrMsg(error);
       return;
     }
+    console.log(response);
+
+    setInResponse(data);
+    setInResponseKeys([...Object.values(response)]);
   };
 
   return (
@@ -179,48 +203,53 @@ function App() {
       <Tab.Container id="left-tabs-example" defaultActiveKey="first">
         <Row>
           <ProgressBar>
-            <ProgressBar variant="success" now={33} key={1} />
-            <ProgressBar variant="warning" now={33} key={2} />
-            <ProgressBar variant="danger" now={33} key={3} />
+            <ProgressBar variant="success" now={0} />
           </ProgressBar>
         </Row>
         <br />
         <Row>
           <Col sm={2}>
-            <Nav variant="pills" className="flex-column">
+            <Nav variant="pills" className="flex-column" activeKey={"first"}>
               <Nav.Item>
                 <Nav.Link eventKey="first">Requests Basics</Nav.Link>
               </Nav.Item>
+
               <Nav.Item>
                 <Nav.Link eventKey="second">Headers Setup</Nav.Link>
               </Nav.Item>
-              {basics.in_type && (
-                <Nav.Item>
-                  <Nav.Link eventKey="third">In Request</Nav.Link>
-                </Nav.Item>
-              )}
-              {basics.out_type && (
-                <Nav.Item>
-                  <Nav.Link eventKey="fourth">Out request</Nav.Link>
-                </Nav.Item>
-              )}
+
+              <Nav.Item>
+                <Nav.Link eventKey="third">In Request</Nav.Link>
+              </Nav.Item>
+
+              <Nav.Item>
+                <Nav.Link eventKey="fourth">Out request</Nav.Link>
+              </Nav.Item>
+
               <Nav.Item>
                 <Nav.Link eventKey="fifth">In to Out Request Map</Nav.Link>
               </Nav.Item>
+
               <Nav.Item>
                 <Nav.Link eventKey="sixth">Statics Map</Nav.Link>
               </Nav.Item>
               <Nav.Item>
                 <Nav.Link eventKey="seventh">Out Response</Nav.Link>
               </Nav.Item>
+
               <Nav.Item>
                 <Nav.Link eventKey="eigth">In Response</Nav.Link>
               </Nav.Item>
+
               <Nav.Item>
-                <Nav.Link eventKey="nineth">Out to In Response Map</Nav.Link>
+                <Nav.Link eventKey="nineth">Out Success Check</Nav.Link>
+              </Nav.Item>
+
+              <Nav.Item>
+                <Nav.Link eventKey="tenth">Out to In Response Map</Nav.Link>
               </Nav.Item>
               <Nav.Item>
-                <Nav.Link eventKey="tenth">Test Config</Nav.Link>
+                <Nav.Link eventKey="eleventh">Complete setup</Nav.Link>
               </Nav.Item>
             </Nav>
           </Col>
@@ -271,7 +300,7 @@ function App() {
               </Tab.Pane>
               <Tab.Pane eventKey="sixth">
                 <StaticInput
-                  data={staticData}
+                  data={outRequestValues}
                   lable={"Statics Setup"}
                   getStatics={getStatics}
                 />
@@ -281,6 +310,7 @@ function App() {
                   lang={basics.out_type}
                   header={"Out Response"}
                   data={apiResponsestring}
+                  getTransFormedData={outResponseProcess}
                 />
               </Tab.Pane>
               <Tab.Pane eventKey="eigth">
@@ -288,6 +318,7 @@ function App() {
                   lang={basics.in_type}
                   header={"In Response"}
                   data={receivedReqTemplate}
+                  getTransFormedData={inResponseProcess}
                 />
               </Tab.Pane>
               <Tab.Pane eventKey="nineth">
@@ -296,7 +327,17 @@ function App() {
                   lable={"Out to In Response Map"}
                 />
               </Tab.Pane>
-              <Tab.Pane eventKey="tenth">Comming soon !!!</Tab.Pane>
+              <Tab.Pane eventKey={"tenth"}>
+                <OutInResponseMap
+                  lable={"Out to in Response Map"}
+                  inreq={inRequestKeys}
+                  inres={inResponseKeys}
+                  outres={outResponseValues}
+                  statics={Object.keys(staticData)}
+                  getIORequestMap={getOIResponseMap}
+                />
+              </Tab.Pane>
+              <Tab.Pane eventKey="eleventh">Comming soon !!!</Tab.Pane>
             </Tab.Content>
           </Col>
         </Row>
