@@ -1,100 +1,89 @@
 import { Button, Card, InputGroup, Row } from "react-bootstrap";
 import CustomDropdown from "./CustomDropDown";
 import { ListSelected } from "./ListSelected";
-import { useState } from "react";
+import { useContext, useState } from "react";
+import { observer } from "mobx-react";
+import { GlobalContext } from "../data/State";
+import { runInAction } from "mobx";
 
 const MAP_TYPE = ["IN_REQUEST", "STATIC", "OUT_RESPONSE"];
-export const OutInResponseMap = ({
-  outres,
-  inres,
-  statics,
-  inreq,
-  lable,
-  getIORequestMap,
-}) => {
-  const [selectedInData, setSelectedInData] = useState(0);
-  const [selectedOutData, setSelectedOutData] = useState(0);
-  const [selectedType, setSelectedType] = useState(0);
-  const [listToDisplay, setListToDisplay] = useState(inreq);
-  const [mapping, setMapping] = useState({});
+export const OutInResponseMap = observer(
+  ({ outres, inres, statics, inreq, lable }) => {
+    const Config = useContext(GlobalContext);
 
-  // useEffect(() => {
+    const [selectedInData, setSelectedInData] = useState(0);
+    const [selectedOutData, setSelectedOutData] = useState(0);
+    // const [listToDisplay, setListToDisplay] = useState(inreq);
+    let listToDisplay = [];
 
-  // }, [selectedType, inreq, outres, statics]);
-  const dynamicList = (data) => {
-    setSelectedType(data);
-    if (selectedType === 0) {
-      setListToDisplay(inreq);
-    } else if (selectedType === 1) {
-      setListToDisplay(statics);
-    } else {
-      setListToDisplay(outres);
-    }
-    console.log("selected type changed", MAP_TYPE[selectedType], listToDisplay);
-  };
+    // FIXME: Update with third dropdown introduced.
+    const handleAddMapping = (e) => {
+      let indata = outres[selectedInData];
+      let outdata = inres[selectedOutData];
+      Config.ResponseDynamic[indata] = outdata;
+      setSelectedInData(0);
+      setSelectedOutData(0);
+    };
 
-  // FIXME: Update with third dropdown introduced.
-  const handleAddMapping = (e) => {
-    let indata = outres[selectedInData];
-    let outdata = inres[selectedOutData];
-    let mappped = mapping;
-    mappped[indata] = outdata;
-    setMapping(mappped);
-    setSelectedInData(0);
-    setSelectedOutData(0);
-  };
+    return (
+      <Card>
+        <Card.Header>{lable}</Card.Header>
+        <Card.Body>
+          <Row>
+            <InputGroup className="mb-3">
+              <CustomDropdown
+                items={MAP_TYPE}
+                func={(selected) => {
+                  runInAction(() => {
+                    Config.ActiveList = selected;
+                    if (Config.ActiveList === 0) {
+                      listToDisplay = inreq;
+                    } else if (Config.ActiveList === 1) {
+                      listToDisplay = statics;
+                    } else {
+                      listToDisplay = outres;
+                    }
+                    console.log(Config.ActiveList, listToDisplay);
+                  });
+                }}
+                lable={"Select list type"}
+              />
 
-  const handleRemove = (itemName) => {
-    let tmp = { ...mapping };
-    delete tmp[itemName];
-    setMapping(tmp);
-    setSelectedInData(0);
-    setSelectedOutData(0);
-  };
-
-  const onDoneHandler = () => {
-    getIORequestMap({ ...mapping });
-  };
-
-  return (
-    <Card>
-      <Card.Header>{lable}</Card.Header>
-      <Card.Body>
-        <Row>
-          <InputGroup className="mb-3">
-            <CustomDropdown
-              items={MAP_TYPE}
-              func={dynamicList}
-              lable={"Select list type"}
-            />
-
-            {/* shift input list based on selected type */}
-            <CustomDropdown
-              items={listToDisplay}
-              func={setSelectedOutData}
-              lable={"Input list"}
-            />
-            <CustomDropdown
-              items={inres}
-              func={setSelectedInData}
-              lable={"Output list"}
-            />
-            <Button
-              variant="success"
-              onClick={(e) => {
-                handleAddMapping(e);
-              }}
-            >
-              +
-            </Button>
-          </InputGroup>
-        </Row>
-        <hr />
-        <ListSelected items={mapping} func={handleRemove} />
-      </Card.Body>
-      <Card.Footer>
-        <Button onClick={onDoneHandler}>Done</Button>
-      </Card.Footer>
-    </Card>
-  );
-};
+              {/* shift input list based on selected type */}
+              <CustomDropdown
+                items={listToDisplay}
+                func={setSelectedOutData}
+                lable={"Input list"}
+              />
+              <CustomDropdown
+                items={inres}
+                func={setSelectedInData}
+                lable={"Output list"}
+              />
+              <Button
+                variant="success"
+                onClick={(e) => {
+                  handleAddMapping(e);
+                }}
+              >
+                +
+              </Button>
+            </InputGroup>
+          </Row>
+          <hr />
+          <ListSelected
+            items={Config.ResponseDynamic}
+            func={(itemName) => {
+              runInAction(() => {
+                delete Config.ResponseDynamic[itemName];
+              });
+            }}
+          />
+        </Card.Body>
+        <Card.Footer>
+          <Button>Done</Button>
+        </Card.Footer>
+      </Card>
+    );
+  }
+);

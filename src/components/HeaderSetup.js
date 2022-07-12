@@ -1,31 +1,22 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { Form, Button, Row, Card, InputGroup } from "react-bootstrap";
 import { ListSelected } from "./ListSelected";
+import { observer } from "mobx-react";
+import { GlobalContext } from "../data/State";
+import { runInAction } from "mobx";
 
-const HeaderSetup = ({ data, lable, getHeaders }) => {
+const HeaderSetup = observer(({ lable }) => {
+  const Config = useContext(GlobalContext);
+
   const [headerName, setHeaderName] = useState("");
   const [headerValue, setHeaderValue] = useState("");
-  const [mapping, setMapping] = useState(data);
 
   const handleAddMapping = (e) => {
-    let mappped = mapping;
-    mappped[headerName] = headerValue;
-    setMapping(mappped);
+    runInAction(() => {
+      Config.Headers[headerName] = headerValue;
+    });
     setHeaderName("");
     setHeaderValue("");
-  };
-
-  const handleRemove = (itemName) => {
-    let tmp = { ...mapping };
-    delete tmp[itemName];
-    setMapping(tmp);
-    setHeaderName("");
-    setHeaderValue("");
-  };
-
-  const onDoneHandler = () => {
-    let tmp = { ...mapping };
-    getHeaders(tmp);
   };
 
   return (
@@ -39,7 +30,7 @@ const HeaderSetup = ({ data, lable, getHeaders }) => {
               placeholder="Header name"
               value={headerName}
               onChange={(e) => {
-                setHeaderName(e.target.value);
+                setHeaderName(e.currentTarget.value);
               }}
             />
             <Form.Control
@@ -47,7 +38,7 @@ const HeaderSetup = ({ data, lable, getHeaders }) => {
               placeholder="Header value"
               value={headerValue}
               onChange={(e) => {
-                setHeaderValue(e.target.value);
+                setHeaderValue(e.currentTarget.value);
               }}
             />
             <Button
@@ -61,13 +52,18 @@ const HeaderSetup = ({ data, lable, getHeaders }) => {
           </InputGroup>
         </Row>
         <hr />
-        <ListSelected items={mapping} func={handleRemove} />
+        <ListSelected
+          items={Config.Headers}
+          func={(itemName) => {
+              delete Config.Headers[itemName];
+          }}
+        />
       </Card.Body>
       <Card.Footer>
-        <Button onClick={onDoneHandler}>Done</Button>
+        <Button>Done</Button>
       </Card.Footer>
     </Card>
   );
-};
+});
 
 export default HeaderSetup;

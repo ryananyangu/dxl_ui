@@ -1,6 +1,7 @@
+import { observer } from "mobx-react";
 import { SelectedItem } from "./SelectedItem";
 
-export const ListSelected = ({ items, func }) => {
+export const ListSelected = observer(({ items, func }) => {
   return (
     <>
       {Object.keys(items).map((item, index) => {
@@ -15,4 +16,4 @@ export const ListSelected = ({ items, func }) => {
       })}
     </>
   );
-};
+});

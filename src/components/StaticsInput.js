@@ -1,41 +1,29 @@
-import { useState } from "react";
+import { runInAction } from "mobx";
+import { observer } from "mobx-react";
+import { useContext, useState } from "react";
 import { Button, Card, Form, InputGroup, Row } from "react-bootstrap";
+import { GlobalContext } from "../data/State";
 import CustomDropdown from "./CustomDropDown";
 import { ListSelected } from "./ListSelected";
 
-export const StaticInput = ({ data, lable, getStatics }) => {
+export const StaticInput = observer(({ data, lable }) => {
+  const Config = useContext(GlobalContext);
   const [selectedInput, setSelectedInput] = useState(0);
   const [staticValue, setStaticValue] = useState("");
   const [isCustom, setCustom] = useState(false);
   const [customValue, setCustomValue] = useState("");
 
-  const [mapping, setMapping] = useState({});
-
   const handleAddMapping = (e) => {
-    let mappped = mapping;
     let val = "";
     if (isCustom) {
       val = customValue;
     } else {
       val = data[selectedInput];
     }
-    mappped[val] = staticValue;
-    setMapping(mappped);
+    Config.Static[val] = staticValue;
     setSelectedInput(0);
     setStaticValue("");
     setCustomValue("");
-  };
-
-  const handleRemove = (itemName) => {
-    let tmp = { ...mapping };
-    delete tmp[itemName];
-    setMapping(tmp);
-    setSelectedInput(0);
-    setStaticValue("");
-  };
-
-  const onDoneHandler = () => {
-    getStatics({ ...mapping });
   };
   return (
     <Card>
@@ -80,11 +68,18 @@ export const StaticInput = ({ data, lable, getStatics }) => {
           </InputGroup>
         </Row>
         <hr />
-        <ListSelected items={mapping} func={handleRemove} />
+        <ListSelected
+          items={Config.Static}
+          func={(staticVal) => {
+            runInAction(() => {
+              delete Config.Static[staticVal];
+            });
+          }}
+        />
       </Card.Body>
       <Card.Footer>
-        <Button onClick={onDoneHandler}>Done</Button>
+        <Button>Done</Button>
       </Card.Footer>
     </Card>
   );
-};
+});

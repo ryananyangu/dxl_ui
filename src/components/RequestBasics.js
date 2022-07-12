@@ -1,22 +1,10 @@
-import React, { useState } from "react";
+import React, { useContext } from "react";
 import { Form, Button, Card } from "react-bootstrap";
-
-export default function RequestBasics({ data, lable, getBasics }) {
-  const [method, setMethod] = useState(data["method"]);
-  const [in_type, setIn_type] = useState(data["in_type"]);
-  const [out_type, setOut_type] = useState(data["out_type"]);
-  const [url, setUrl] = useState(data["url"]);
-  const [serviceCode, SetServiceCode] = useState(data["serviceCode"]);
-
-  const onDoneHandler = () => {
-    let tmp = { ...data };
-    tmp.method = method;
-    tmp.in_type = in_type;
-    tmp.out_type = out_type;
-    tmp.url = url;
-    tmp.serviceCode = serviceCode;
-    getBasics(tmp);
-  };
+import { GlobalContext } from "../data/State";
+import { observer } from "mobx-react";
+import { runInAction } from "mobx";
+export const RequestBasics = observer(({ lable }) => {
+  const config = useContext(GlobalContext);
 
   return (
     <Card>
@@ -27,9 +15,11 @@ export default function RequestBasics({ data, lable, getBasics }) {
             <Form.Control
               type="text"
               placeholder="Out request method"
-              value={method}
+              value={config.HTTPMethod}
               onChange={(e) => {
-                setMethod(e.target.value);
+                runInAction(() => {
+                  config.HTTPMethod = e.currentTarget.value;
+                });
               }}
             />
           </Form.Group>
@@ -37,9 +27,11 @@ export default function RequestBasics({ data, lable, getBasics }) {
             <Form.Control
               type="text"
               placeholder="In request type"
-              value={in_type}
+              value={config.InRequestType}
               onChange={(e) => {
-                setIn_type(e.target.value);
+                runInAction(() => {
+                  config.InRequestType = e.currentTarget.value;
+                });
               }}
             />
           </Form.Group>
@@ -47,9 +39,11 @@ export default function RequestBasics({ data, lable, getBasics }) {
             <Form.Control
               type="text"
               placeholder="Out request type"
-              value={out_type}
+              value={config.OutRequestType}
               onChange={(e) => {
-                setOut_type(e.target.value);
+                runInAction(() => {
+                  config.OutRequestType = e.currentTarget.value;
+                });
               }}
             />
           </Form.Group>
@@ -57,9 +51,11 @@ export default function RequestBasics({ data, lable, getBasics }) {
             <Form.Control
               type="text"
               placeholder="Service code"
-              value={serviceCode}
+              value={config.ServiceCode}
               onChange={(e) => {
-                SetServiceCode(e.target.value);
+                runInAction(() => {
+                  config.ServiceCode = e.currentTarget.value;
+                });
               }}
             />
           </Form.Group>
@@ -67,17 +63,19 @@ export default function RequestBasics({ data, lable, getBasics }) {
             <Form.Control
               type="text"
               placeholder="Out request url"
-              value={url}
+              value={config.Endpoint}
               onChange={(e) => {
-                setUrl(e.target.value);
+                runInAction(() => {
+                  config.Endpoint = e.currentTarget.value;
+                });
               }}
             />
           </Form.Group>
         </Form>
       </Card.Body>
       <Card.Footer>
-        <Button onClick={onDoneHandler}>Done</Button>
+        <Button>Done</Button>
       </Card.Footer>
     </Card>
   );
-}
+});

@@ -1,3 +1,4 @@
+import { runInAction } from "mobx";
 import { Row, Button, InputGroup, Form } from "react-bootstrap";
 
 export const SelectedItem = ({ itemName, itemValue, func }) => {
@@ -10,7 +11,9 @@ export const SelectedItem = ({ itemName, itemValue, func }) => {
           <Button
             variant="danger"
             onClick={() => {
-              func(itemName);
+              runInAction(() => {
+                func(itemName);
+              });
             }}
           >
             -

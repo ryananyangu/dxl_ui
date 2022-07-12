@@ -14,7 +14,7 @@ const TextInputDynamic = ({ name, value, getter }) => {
             placeholder={name}
             value={value}
             onChange={(e) => {
-              getter(e.target.value);
+              getter(e.currentTarget.value);
             }}
           />
         </Col>

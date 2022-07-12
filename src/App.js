@@ -1,6 +1,6 @@
 import { Container, Row, Col, Tab, Nav, ProgressBar } from "react-bootstrap";
-import RequestBasics from "./components/RequestBasics";
-import CodeEditor from "./components/CodeEditor";
+import { RequestBasics } from "./components/RequestBasics";
+import { CodeEditor } from "./components/CodeEditor";
 import InOutRequestMap from "./components/InOutRequestMap";
 import HeaderSetup from "./components/HeaderSetup";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -9,21 +9,16 @@ import OutResponseChecker from "./components/OutResponseChecker";
 import { useState } from "react";
 import { CustomAlert } from "./components/CustomAlert";
 import { OutInResponseMap } from "./components/OutInReponseMap";
+import { GlobalContext, GlobalConfig } from "./data/State";
+import { observer } from "mobx-react";
 
 const HTTP_SUCCESS = 200;
 const FLATJSONURL = "http://0.0.0.0:8080/api/v1/process/jsonflatten";
 const XML2FLATJSON = "http://0.0.0.0:8080/api/v1/process/xmltoflatjson";
 
-function App() {
-  // Schema
-  let reqBasics = {
-    method: "",
-    in_type: "",
-    out_type: "",
-    url: "",
-    serviceCode: "",
-  };
+const Config = new GlobalConfig();
 
+const App = observer(() => {
   let receivedReqTemplate = `{
     "packet":[
         {
@@ -61,49 +56,15 @@ function App() {
 </Envelope>
 `;
 
-  // schema
-  let outSuccessDef = {
-    type: "",
-    code: "",
-    path: "",
-  };
-
-  const [basics, setBasics] = useState(reqBasics);
-  const [headers, setHeaders] = useState({});
   const [inRequest, setInRequest] = useState("");
   const [outRequest, setOutRequest] = useState("");
-  const [staticData, setStaticData] = useState({});
-  const [inRequestKeys, setInRequestKeys] = useState([]);
+  // const [inRequestKeys, setInRequestKeys] = useState([]);
   const [outRequestValues, setOutRequestValues] = useState([]);
-  const [IOReqMap, setIORequestMap] = useState({});
   const [outResponse, setOutResponse] = useState("");
   const [inResponse, setInResponse] = useState("");
-  const [OIResponseMap, setOIResponseMap] = useState({});
   const [inResponseKeys, setInResponseKeys] = useState([]);
   const [outResponseValues, setOutResponseValues] = useState([]);
   const [errMsg, setErrMsg] = useState("");
-
-  const getBasics = (data) => {
-    setBasics({ ...data });
-  };
-
-  const getHeaders = (data) => {
-    setHeaders({ ...data });
-  };
-
-  const getStatics = (data) => {
-    setStaticData({ ...data });
-  };
-
-  const getIORequestMap = (data) => {
-    setIORequestMap(data);
-    console.log(IOReqMap);
-  };
-
-  const getOIResponseMap = (data) => {
-    setOIResponseMap(data);
-    console.log(OIResponseMap);
-  };
 
   const sendPostRequest = async (payload, headers, url) => {
     let final_response = {};
@@ -138,13 +99,13 @@ function App() {
       response = await sendPostRequest(data, process_header, XML2FLATJSON);
     } else {
       response.response = "";
-      response.err = "Unknown type" + basics.in_type;
+      response.err = "Unknown type" + Config.InRequestType;
     }
     return response;
   };
 
   const inRequestProcess = async (data) => {
-    const { response, error } = await routRequest(data, basics.in_type);
+    const { response, error } = await routRequest(data, Config.InRequestType);
 
     if (error) {
       setErrMsg(error);
@@ -152,11 +113,11 @@ function App() {
     }
     setInRequest(data);
 
-    setInRequestKeys([...Object.keys(response)]);
+    Config.RequestKeys = [...Object.keys(response)];
   };
 
   const outRequestProcess = async (data) => {
-    const { response, error } = await routRequest(data, basics.out_type);
+    const { response, error } = await routRequest(data, Config.OutRequestType);
     if (error) {
       setErrMsg(error);
       return;
@@ -166,7 +127,7 @@ function App() {
     setOutRequestValues([...Object.values(response)]);
   };
   const outResponseProcess = async (data) => {
-    const { response, error } = await routRequest(data, basics.out_type);
+    const { response, error } = await routRequest(data, Config.OutRequestType);
     if (error) {
       setErrMsg(error);
       return;
@@ -176,8 +137,8 @@ function App() {
     setOutResponseValues([...Object.keys(response)]);
   };
   const inResponseProcess = async (data) => {
-    console.log(data, basics.in_type);
-    const { response, error } = await routRequest(data, basics.in_type);
+    console.log(data, Config.InRequestType);
+    const { response, error } = await routRequest(data, Config.InRequestType);
     if (error) {
       setErrMsg(error);
       return;
@@ -189,161 +150,147 @@ function App() {
   };
 
   return (
-    <Container fluid>
-      {errMsg && (
-        <CustomAlert
-          body={errMsg}
-          variant={"danger"}
-          onClose={() => {
-            setErrMsg("");
-          }}
-        />
-      )}
-      <br />
-      <Tab.Container id="left-tabs-example" defaultActiveKey="first">
-        <Row>
-          <ProgressBar>
-            <ProgressBar variant="success" now={0} />
-          </ProgressBar>
-        </Row>
+    <GlobalContext.Provider value={Config}>
+      <Container fluid>
+        {errMsg && (
+          <CustomAlert
+            body={errMsg}
+            variant={"danger"}
+            onClose={() => {
+              setErrMsg("");
+            }}
+          />
+        )}
         <br />
-        <Row>
-          <Col sm={2}>
-            <Nav variant="pills" className="flex-column" activeKey={"first"}>
-              <Nav.Item>
-                <Nav.Link eventKey="first">Requests Basics</Nav.Link>
-              </Nav.Item>
+        <Tab.Container id="left-tabs-example" defaultActiveKey="first">
+          <Row>
+            <ProgressBar>
+              <ProgressBar variant="success" now={0} />
+            </ProgressBar>
+          </Row>
+          <br />
+          <Row>
+            <Col sm={2}>
+              <Nav variant="pills" className="flex-column" activeKey={"first"}>
+                <Nav.Item>
+                  <Nav.Link eventKey="first">Requests Basics</Nav.Link>
+                </Nav.Item>
 
-              <Nav.Item>
-                <Nav.Link eventKey="second">Headers Setup</Nav.Link>
-              </Nav.Item>
+                <Nav.Item>
+                  <Nav.Link eventKey="second">Headers Setup</Nav.Link>
+                </Nav.Item>
 
-              <Nav.Item>
-                <Nav.Link eventKey="third">In Request</Nav.Link>
-              </Nav.Item>
+                <Nav.Item>
+                  <Nav.Link eventKey="third">In Request</Nav.Link>
+                </Nav.Item>
 
-              <Nav.Item>
-                <Nav.Link eventKey="fourth">Out request</Nav.Link>
-              </Nav.Item>
+                <Nav.Item>
+                  <Nav.Link eventKey="fourth">Out request</Nav.Link>
+                </Nav.Item>
 
-              <Nav.Item>
-                <Nav.Link eventKey="fifth">In to Out Request Map</Nav.Link>
-              </Nav.Item>
+                <Nav.Item>
+                  <Nav.Link eventKey="fifth">In to Out Request Map</Nav.Link>
+                </Nav.Item>
 
-              <Nav.Item>
-                <Nav.Link eventKey="sixth">Statics Map</Nav.Link>
-              </Nav.Item>
-              <Nav.Item>
-                <Nav.Link eventKey="seventh">Out Response</Nav.Link>
-              </Nav.Item>
+                <Nav.Item>
+                  <Nav.Link eventKey="sixth">Statics Map</Nav.Link>
+                </Nav.Item>
+                <Nav.Item>
+                  <Nav.Link eventKey="seventh">Out Response</Nav.Link>
+                </Nav.Item>
 
-              <Nav.Item>
-                <Nav.Link eventKey="eigth">In Response</Nav.Link>
-              </Nav.Item>
+                <Nav.Item>
+                  <Nav.Link eventKey="eigth">In Response</Nav.Link>
+                </Nav.Item>
 
-              <Nav.Item>
-                <Nav.Link eventKey="nineth">Out Success Check</Nav.Link>
-              </Nav.Item>
+                <Nav.Item>
+                  <Nav.Link eventKey="nineth">Out Success Check</Nav.Link>
+                </Nav.Item>
 
-              <Nav.Item>
-                <Nav.Link eventKey="tenth">Out to In Response Map</Nav.Link>
-              </Nav.Item>
-              <Nav.Item>
-                <Nav.Link eventKey="eleventh">Complete setup</Nav.Link>
-              </Nav.Item>
-            </Nav>
-          </Col>
-          <Col sm={8}>
-            <Tab.Content>
-              <Tab.Pane eventKey="first">
-                <RequestBasics
-                  data={basics}
-                  lable={"Request Basics"}
-                  getBasics={getBasics}
-                />
-              </Tab.Pane>
-              <Tab.Pane eventKey="second">
-                <HeaderSetup
-                  data={headers}
-                  lable={"Headers Setup"}
-                  getHeaders={getHeaders}
-                />
-              </Tab.Pane>
-              {basics.in_type && (
+                <Nav.Item>
+                  <Nav.Link eventKey="tenth">Out to In Response Map</Nav.Link>
+                </Nav.Item>
+                <Nav.Item>
+                  <Nav.Link eventKey="eleventh">Complete setup</Nav.Link>
+                </Nav.Item>
+              </Nav>
+            </Col>
+            <Col sm={8}>
+              <Tab.Content>
+                <Tab.Pane eventKey="first">
+                  <RequestBasics lable={"Request Basics"} />
+                </Tab.Pane>
+                <Tab.Pane eventKey="second">
+                  <HeaderSetup lable={"Headers Setup"} />
+                </Tab.Pane>
+
                 <Tab.Pane eventKey="third">
                   <CodeEditor
-                    lang={basics.in_type}
+                    lang={Config.InRequestType}
                     header={"In Request"}
                     data={inRequest}
                     getTransFormedData={inRequestProcess}
                   />
                 </Tab.Pane>
-              )}
-              {basics.out_type && (
+
                 <Tab.Pane eventKey="fourth">
                   <CodeEditor
-                    lang={basics.out_type}
+                    lang={Config.OutRequestType}
                     header={"Out Request"}
-                    data={outRequest}
+                    data={Config.RequestTemplate}
                     getTransFormedData={outRequestProcess}
                   />
                 </Tab.Pane>
-              )}
 
-              <Tab.Pane eventKey="fifth">
-                <InOutRequestMap
-                  lable={"In to Out Request Map"}
-                  inlist={inRequestKeys}
-                  outlist={outRequestValues}
-                  getIORequestMap={getIORequestMap}
-                />
-              </Tab.Pane>
-              <Tab.Pane eventKey="sixth">
-                <StaticInput
-                  data={outRequestValues}
-                  lable={"Statics Setup"}
-                  getStatics={getStatics}
-                />
-              </Tab.Pane>
-              <Tab.Pane eventKey="seventh">
-                <CodeEditor
-                  lang={basics.out_type}
-                  header={"Out Response"}
-                  data={apiResponsestring}
-                  getTransFormedData={outResponseProcess}
-                />
-              </Tab.Pane>
-              <Tab.Pane eventKey="eigth">
-                <CodeEditor
-                  lang={basics.in_type}
-                  header={"In Response"}
-                  data={receivedReqTemplate}
-                  getTransFormedData={inResponseProcess}
-                />
-              </Tab.Pane>
-              <Tab.Pane eventKey="nineth">
-                <OutResponseChecker
-                  data={outSuccessDef}
-                  lable={"Out to In Response Map"}
-                />
-              </Tab.Pane>
-              <Tab.Pane eventKey={"tenth"}>
-                <OutInResponseMap
-                  lable={"Out to in Response Map"}
-                  inreq={inRequestKeys}
-                  inres={inResponseKeys}
-                  outres={outResponseValues}
-                  statics={Object.keys(staticData)}
-                  getIORequestMap={getOIResponseMap}
-                />
-              </Tab.Pane>
-              <Tab.Pane eventKey="eleventh">Comming soon !!!</Tab.Pane>
-            </Tab.Content>
-          </Col>
-        </Row>
-      </Tab.Container>
-    </Container>
+                <Tab.Pane eventKey="fifth">
+                  <InOutRequestMap
+                    lable={"In to Out Request Map"}
+                    inlist={Config.RequestKeys}
+                    outlist={outRequestValues}
+                  />
+                </Tab.Pane>
+                <Tab.Pane eventKey="sixth">
+                  <StaticInput
+                    data={outRequestValues}
+                    lable={"Statics Setup"}
+                  />
+                </Tab.Pane>
+                <Tab.Pane eventKey="seventh">
+                  <CodeEditor
+                    lang={Config.OutRequestType}
+                    header={"Out Response"}
+                    data={apiResponsestring}
+                    getTransFormedData={outResponseProcess}
+                  />
+                </Tab.Pane>
+                <Tab.Pane eventKey="eigth">
+                  <CodeEditor
+                    lang={Config.InRequestType}
+                    header={"In Response"}
+                    data={receivedReqTemplate}
+                    getTransFormedData={inResponseProcess}
+                  />
+                </Tab.Pane>
+                <Tab.Pane eventKey="nineth">
+                  <OutResponseChecker lable={"Out to In Response Map"} />
+                </Tab.Pane>
+                <Tab.Pane eventKey={"tenth"}>
+                  <OutInResponseMap
+                    lable={"Out to in Response Map"}
+                    inreq={inRequestKeys}
+                    inres={inResponseKeys}
+                    outres={outResponseValues}
+                    statics={Object.keys(Config.Static)}
+                  />
+                </Tab.Pane>
+                <Tab.Pane eventKey="eleventh">Comming soon !!!</Tab.Pane>
+              </Tab.Content>
+            </Col>
+          </Row>
+        </Tab.Container>
+      </Container>
+    </GlobalContext.Provider>
   );
-}
+});
 
 export default App;
