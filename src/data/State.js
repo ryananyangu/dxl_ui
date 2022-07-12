@@ -26,11 +26,13 @@ export class GlobalConfig {
   OutRequestType = "";
 
   // None Payload trackers
-  ActiveList = [];
   RequestKeys = [];
+  OutRequestValues = [];
   StaticKeys = [];
   DynamicKeys = [];
-  ResponseKeys = [];
+  OutResponseKeys = [];
+  InResponseValues = [];
+  ActiveMenu = "first";
 }
 
 export const GlobalContext = createContext(null);

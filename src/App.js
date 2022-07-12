@@ -1,7 +1,16 @@
-import { Container, Row, Col, Tab, Nav, ProgressBar } from "react-bootstrap";
+import {
+  Container,
+  Row,
+  Col,
+  Tab,
+  Nav,
+  ProgressBar,
+  Card,
+  Button,
+} from "react-bootstrap";
 import { RequestBasics } from "./components/RequestBasics";
-import { CodeEditor } from "./components/CodeEditor";
 import InOutRequestMap from "./components/InOutRequestMap";
+import Editor from "@monaco-editor/react";
 import HeaderSetup from "./components/HeaderSetup";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { StaticInput } from "./components/StaticsInput";
@@ -11,6 +20,7 @@ import { CustomAlert } from "./components/CustomAlert";
 import { OutInResponseMap } from "./components/OutInReponseMap";
 import { GlobalContext, GlobalConfig } from "./data/State";
 import { observer } from "mobx-react";
+import { runInAction } from "mobx";
 
 const HTTP_SUCCESS = 200;
 const FLATJSONURL = "http://0.0.0.0:8080/api/v1/process/jsonflatten";
@@ -19,51 +29,8 @@ const XML2FLATJSON = "http://0.0.0.0:8080/api/v1/process/xmltoflatjson";
 const Config = new GlobalConfig();
 
 const App = observer(() => {
-  let receivedReqTemplate = `{
-    "packet":[
-        {
-            "narration":"{narration}",
-            "statusDescription":"{statusDescription}",
-            "receiptNumber":"{receiptNumber}",
-            "statusCode":"{statusCode}",
-            "payerTransactionID":"{payerTransactionID}",
-            "beepTransactionID":"{beepTransactionID}",
-            "amountExpected":"{amountExpected}"
-        }
-    ],
-    "credentials":{
-        "username":"{username}",
-        "password":"{password}"
-    }
-}`;
-
-  let apiResponsestring = `
-<?xml version="1.0" encoding="UTF-8"?>
-<Envelope xmlns="http://schemas.xmlsoap.org/soap/envelope/">
-   <Header />
-   <Body>
-      <SubmitSMResponse xmlns="http://www.openmindnetworks.com/SoS" xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" soapenv:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">
-         <smResponse>
-            <commandStatus>0</commandStatus>
-			<statusDescription>success</statusDescription>
-            <messageId>02940001</messageId>
-			<transactionID>HJ87678JHS-01</transactionID>
-			<tpTrxID>3037981</tpTrxID>
-            <tlvData />
-         </smResponse>
-      </SubmitSMResponse>
-   </Body>
-</Envelope>
-`;
-
   const [inRequest, setInRequest] = useState("");
-  const [outRequest, setOutRequest] = useState("");
-  // const [inRequestKeys, setInRequestKeys] = useState([]);
-  const [outRequestValues, setOutRequestValues] = useState([]);
   const [outResponse, setOutResponse] = useState("");
-  const [inResponse, setInResponse] = useState("");
-  const [inResponseKeys, setInResponseKeys] = useState([]);
-  const [outResponseValues, setOutResponseValues] = useState([]);
   const [errMsg, setErrMsg] = useState("");
 
   const sendPostRequest = async (payload, headers, url) => {
@@ -75,7 +42,6 @@ const App = observer(() => {
         body: payload,
         headers: headers,
       });
-      console.log(url, response.status);
       if (response.status === HTTP_SUCCESS) {
         const result = await response.json();
         final_response = result;
@@ -104,49 +70,52 @@ const App = observer(() => {
     return response;
   };
 
-  const inRequestProcess = async (data) => {
-    const { response, error } = await routRequest(data, Config.InRequestType);
+  const inRequestProcess = async () => {
+    const { response, error } = await routRequest(
+      inRequest,
+      Config.InRequestType
+    );
 
     if (error) {
       setErrMsg(error);
       return;
     }
-    setInRequest(data);
 
-    Config.RequestKeys = [...Object.keys(response)];
+    return response;
   };
 
-  const outRequestProcess = async (data) => {
-    const { response, error } = await routRequest(data, Config.OutRequestType);
+  const outRequestProcess = async () => {
+    const { response, error } = await routRequest(
+      Config.RequestTemplate,
+      Config.OutRequestType
+    );
     if (error) {
       setErrMsg(error);
       return;
     }
-
-    setOutRequest(data);
-    setOutRequestValues([...Object.values(response)]);
+    Config.OutRequestValues = [...Object.values(response)];
   };
-  const outResponseProcess = async (data) => {
-    const { response, error } = await routRequest(data, Config.OutRequestType);
+  const outResponseProcess = async () => {
+    const { response, error } = await routRequest(
+      outResponse,
+      Config.OutRequestType
+    );
     if (error) {
       setErrMsg(error);
       return;
     }
-
-    setOutResponse(data);
-    setOutResponseValues([...Object.keys(response)]);
+    Config.OutResponseKeys = [...Object.keys(response)];
   };
-  const inResponseProcess = async (data) => {
-    console.log(data, Config.InRequestType);
-    const { response, error } = await routRequest(data, Config.InRequestType);
+  const inResponseProcess = async () => {
+    const { response, error } = await routRequest(
+      Config.ResponseTemplate,
+      Config.InRequestType
+    );
     if (error) {
       setErrMsg(error);
       return;
     }
-    console.log(response);
-
-    setInResponse(data);
-    setInResponseKeys([...Object.values(response)]);
+    Config.InResponseValues = [...Object.values(response)];
   };
 
   return (
@@ -171,7 +140,11 @@ const App = observer(() => {
           <br />
           <Row>
             <Col sm={2}>
-              <Nav variant="pills" className="flex-column" activeKey={"first"}>
+              <Nav
+                variant="pills"
+                className="flex-column"
+                activeKey={Config.ActiveMenu}
+              >
                 <Nav.Item>
                   <Nav.Link eventKey="first">Requests Basics</Nav.Link>
                 </Nav.Item>
@@ -225,63 +198,136 @@ const App = observer(() => {
                 </Tab.Pane>
 
                 <Tab.Pane eventKey="third">
-                  <CodeEditor
-                    lang={Config.InRequestType}
-                    header={"In Request"}
-                    data={inRequest}
-                    getTransFormedData={inRequestProcess}
-                  />
+                  <Card>
+                    <Card.Header>{"In Request"}</Card.Header>
+                    <Card.Body>
+                      <Editor
+                        height="50vh"
+                        defaultLanguage={Config.InRequestType}
+                        defaultValue={inRequest}
+                        theme="vs-dark"
+                        onChange={(value) => {
+                          setInRequest(value);
+                        }}
+                      />
+                      <Button
+                        variant="primary"
+                        onClick={() => {
+                          runInAction(async () => {
+                            const response = await inRequestProcess();
+                            Config.RequestKeys = [...Object.keys(response)];
+                          });
+                        }}
+                      >
+                        Convert code
+                      </Button>
+                    </Card.Body>
+                  </Card>
                 </Tab.Pane>
 
                 <Tab.Pane eventKey="fourth">
-                  <CodeEditor
-                    lang={Config.OutRequestType}
-                    header={"Out Request"}
-                    data={Config.RequestTemplate}
-                    getTransFormedData={outRequestProcess}
-                  />
+                  <Card>
+                    <Card.Header>{"Out Request"}</Card.Header>
+                    <Card.Body>
+                      <Editor
+                        height="50vh"
+                        defaultLanguage={Config.OutRequestType}
+                        defaultValue={Config.RequestTemplate}
+                        theme="vs-dark"
+                        onChange={(value) => {
+                          runInAction(() => {
+                            Config.RequestTemplate = value;
+                          });
+                        }}
+                      />
+                      <Button
+                        variant="primary"
+                        onClick={() => {
+                          runInAction(() => {
+                            outRequestProcess();
+                          });
+                        }}
+                      >
+                        Convert code
+                      </Button>
+                    </Card.Body>
+                  </Card>
                 </Tab.Pane>
 
                 <Tab.Pane eventKey="fifth">
                   <InOutRequestMap
                     lable={"In to Out Request Map"}
                     inlist={Config.RequestKeys}
-                    outlist={outRequestValues}
+                    outlist={Config.OutRequestValues}
                   />
                 </Tab.Pane>
                 <Tab.Pane eventKey="sixth">
                   <StaticInput
-                    data={outRequestValues}
+                    data={Config.OutRequestValues}
                     lable={"Statics Setup"}
                   />
                 </Tab.Pane>
                 <Tab.Pane eventKey="seventh">
-                  <CodeEditor
-                    lang={Config.OutRequestType}
-                    header={"Out Response"}
-                    data={apiResponsestring}
-                    getTransFormedData={outResponseProcess}
-                  />
+                  <Card>
+                    <Card.Header>{"Out Response"}</Card.Header>
+                    <Card.Body>
+                      <Editor
+                        height="50vh"
+                        defaultLanguage={Config.OutRequestType}
+                        defaultValue={outResponse}
+                        theme="vs-dark"
+                        onChange={(value) => {
+                          runInAction(() => {
+                            setOutResponse(value);
+                          });
+                        }}
+                      />
+                      <Button
+                        variant="primary"
+                        onClick={() => {
+                          runInAction(() => {
+                            outResponseProcess();
+                          });
+                        }}
+                      >
+                        Convert code
+                      </Button>
+                    </Card.Body>
+                  </Card>
                 </Tab.Pane>
                 <Tab.Pane eventKey="eigth">
-                  <CodeEditor
-                    lang={Config.InRequestType}
-                    header={"In Response"}
-                    data={receivedReqTemplate}
-                    getTransFormedData={inResponseProcess}
-                  />
+                  <Card>
+                    <Card.Header>{"In Response"}</Card.Header>
+                    <Card.Body>
+                      <Editor
+                        height="50vh"
+                        defaultLanguage={Config.InRequestType}
+                        defaultValue={Config.ResponseTemplate}
+                        theme="vs-dark"
+                        onChange={(value) => {
+                          runInAction(() => {
+                            Config.ResponseTemplate = value;
+                          });
+                        }}
+                      />
+                      <Button
+                        variant="primary"
+                        onClick={() => {
+                          runInAction(() => {
+                            inResponseProcess();
+                          });
+                        }}
+                      >
+                        Convert code
+                      </Button>
+                    </Card.Body>
+                  </Card>
                 </Tab.Pane>
                 <Tab.Pane eventKey="nineth">
                   <OutResponseChecker lable={"Out to In Response Map"} />
                 </Tab.Pane>
                 <Tab.Pane eventKey={"tenth"}>
-                  <OutInResponseMap
-                    lable={"Out to in Response Map"}
-                    inreq={inRequestKeys}
-                    inres={inResponseKeys}
-                    outres={outResponseValues}
-                    statics={Object.keys(Config.Static)}
-                  />
+                  <OutInResponseMap />
                 </Tab.Pane>
                 <Tab.Pane eventKey="eleventh">Comming soon !!!</Tab.Pane>
               </Tab.Content>

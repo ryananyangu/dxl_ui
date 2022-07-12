@@ -7,83 +7,106 @@ import { GlobalContext } from "../data/State";
 import { runInAction } from "mobx";
 
 const MAP_TYPE = ["IN_REQUEST", "STATIC", "OUT_RESPONSE"];
-export const OutInResponseMap = observer(
-  ({ outres, inres, statics, inreq, lable }) => {
-    const Config = useContext(GlobalContext);
+export const OutInResponseMap = observer(() => {
+  const Config = useContext(GlobalContext);
 
-    const [selectedInData, setSelectedInData] = useState(0);
-    const [selectedOutData, setSelectedOutData] = useState(0);
-    // const [listToDisplay, setListToDisplay] = useState(inreq);
-    let listToDisplay = [];
+  const [selectedInData, setSelectedInData] = useState(0);
+  const [selectedOutData, setSelectedOutData] = useState(0);
+  const [selectedType, setSelectedType] = useState(0);
 
-    // FIXME: Update with third dropdown introduced.
-    const handleAddMapping = (e) => {
-      let indata = outres[selectedInData];
-      let outdata = inres[selectedOutData];
-      Config.ResponseDynamic[indata] = outdata;
-      setSelectedInData(0);
-      setSelectedOutData(0);
-    };
+  const handleAddMapping = () => {
+    console.log(selectedOutData, selectedInData);
+    let val = "";
+    if (selectedType === 0) {
+      val = Config.RequestKeys[selectedOutData];
+    } else if (selectedType === 1) {
+      val = Object.keys(Config.Static)[selectedOutData];
+    } else {
+      val = Config.OutResponseKeys[selectedOutData];
+    }
 
-    return (
-      <Card>
-        <Card.Header>{lable}</Card.Header>
-        <Card.Body>
-          <Row>
-            <InputGroup className="mb-3">
+    let indata = Config.InResponseValues[selectedInData];
+    Config.ResponseDynamic[val] = indata;
+    setSelectedInData(0);
+    setSelectedOutData(0);
+  };
+
+  return (
+    <Card>
+      <Card.Header>{"Out to in Response Map"}</Card.Header>
+      <Card.Body>
+        <Row>
+          <InputGroup className="mb-3">
+            <CustomDropdown
+              items={MAP_TYPE}
+              lable={"Select list type"}
+              func={(selected) => {
+                runInAction(() => {
+                  setSelectedType(parseInt(selected));
+                });
+              }}
+            />
+            {selectedType === 0 && (
               <CustomDropdown
-                items={MAP_TYPE}
-                func={(selected) => {
-                  runInAction(() => {
-                    Config.ActiveList = selected;
-                    if (Config.ActiveList === 0) {
-                      listToDisplay = inreq;
-                    } else if (Config.ActiveList === 1) {
-                      listToDisplay = statics;
-                    } else {
-                      listToDisplay = outres;
-                    }
-                    console.log(Config.ActiveList, listToDisplay);
-                  });
+                items={Config.RequestKeys}
+                func={(selection) => {
+                  setSelectedOutData(parseInt(selection));
                 }}
-                lable={"Select list type"}
+                lable={"Request keys list"}
               />
+            )}
 
-              {/* shift input list based on selected type */}
+            {selectedType === 1 && (
               <CustomDropdown
-                items={listToDisplay}
-                func={setSelectedOutData}
-                lable={"Input list"}
-              />
-              <CustomDropdown
-                items={inres}
-                func={setSelectedInData}
-                lable={"Output list"}
-              />
-              <Button
-                variant="success"
-                onClick={(e) => {
-                  handleAddMapping(e);
+                items={Object.keys(Config.Static)}
+                func={(selection) => {
+                  setSelectedOutData(parseInt(selection));
                 }}
-              >
-                +
-              </Button>
-            </InputGroup>
-          </Row>
-          <hr />
-          <ListSelected
-            items={Config.ResponseDynamic}
-            func={(itemName) => {
-              runInAction(() => {
-                delete Config.ResponseDynamic[itemName];
-              });
-            }}
-          />
-        </Card.Body>
-        <Card.Footer>
-          <Button>Done</Button>
-        </Card.Footer>
-      </Card>
-    );
-  }
-);
+                lable={"Static Keys list"}
+              />
+            )}
+
+            {selectedType === 2 && (
+              <CustomDropdown
+                items={Config.OutResponseKeys}
+                func={(selection) => {
+                  setSelectedOutData(parseInt(selection));
+                }}
+                lable={"Out Response values list"}
+              />
+            )}
+            <CustomDropdown
+              items={Config.InResponseValues}
+              func={(selection) => {
+                setSelectedInData(parseInt(selection));
+              }}
+              lable={"In Response list"}
+            />
+            <Button
+              variant="success"
+              onClick={() => {
+                runInAction(() => {
+                  handleAddMapping();
+                });
+              }}
+            >
+              +
+            </Button>
+          </InputGroup>
+        </Row>
+        <hr />
+        <ListSelected
+          items={Config.ResponseDynamic}
+          func={(itemName) => {
+            runInAction(() => {
+              delete Config.ResponseDynamic[itemName];
+            });
+          }}
+        />
+      </Card.Body>
+      <Card.Footer>
+        <Button>Next</Button>
+      </Card.Footer>
+    </Card>
+  );
+});

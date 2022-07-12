@@ -55,12 +55,20 @@ const HeaderSetup = observer(({ lable }) => {
         <ListSelected
           items={Config.Headers}
           func={(itemName) => {
-              delete Config.Headers[itemName];
+            delete Config.Headers[itemName];
           }}
         />
       </Card.Body>
       <Card.Footer>
-        <Button>Done</Button>
+        <Button
+          onClick={() => {
+            runInAction(() => {
+              Config.ActiveMenu = "third";
+            });
+          }}
+        >
+          Next
+        </Button>
       </Card.Footer>
     </Card>
   );

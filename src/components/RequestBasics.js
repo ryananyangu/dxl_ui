@@ -74,7 +74,15 @@ export const RequestBasics = observer(({ lable }) => {
         </Form>
       </Card.Body>
       <Card.Footer>
-        <Button>Done</Button>
+        <Button
+          onClick={() => {
+            runInAction(() => {
+              config.ActiveMenu = "second";
+            });
+          }}
+        >
+          Next
+        </Button>
       </Card.Footer>
     </Card>
   );

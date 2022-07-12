@@ -78,7 +78,7 @@ export const StaticInput = observer(({ data, lable }) => {
         />
       </Card.Body>
       <Card.Footer>
-        <Button>Done</Button>
+        <Button>Next</Button>
       </Card.Footer>
     </Card>
   );
