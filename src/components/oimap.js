@@ -5,10 +5,12 @@ import { useContext, useState } from "react";
 import { observer } from "mobx-react";
 import { GlobalContext } from "../data/State";
 import { runInAction } from "mobx";
+import { useNavigate } from "react-router-dom";
 
 const MAP_TYPE = ["IN_REQUEST", "STATIC", "OUT_RESPONSE"];
 export const OutInResponseMap = observer(() => {
   const Config = useContext(GlobalContext);
+  const navigate = useNavigate();
 
   const [selectedInData, setSelectedInData] = useState(0);
   const [selectedOutData, setSelectedOutData] = useState(0);
@@ -18,15 +20,15 @@ export const OutInResponseMap = observer(() => {
     console.log(selectedOutData, selectedInData);
     let val = "";
     if (selectedType === 0) {
-      val = Config.RequestKeys[selectedOutData];
+      val = "in_request." + Config.RequestKeys[selectedOutData];
     } else if (selectedType === 1) {
-      val = Object.keys(Config.Static)[selectedOutData];
+      val = "static." + Object.keys(Config.Static)[selectedOutData];
     } else {
       val = Config.OutResponseKeys[selectedOutData];
     }
 
     let indata = Config.InResponseValues[selectedInData];
-    Config.ResponseDynamic[val] = indata;
+    Config.ResponseDynamic[indata] = val;
     setSelectedInData(0);
     setSelectedOutData(0);
   };
@@ -42,7 +44,7 @@ export const OutInResponseMap = observer(() => {
               lable={"Select list type"}
               func={(selected) => {
                 runInAction(() => {
-                  setSelectedType(parseInt(selected));
+                  setSelectedType(selected);
                 });
               }}
             />
@@ -50,7 +52,7 @@ export const OutInResponseMap = observer(() => {
               <CustomDropdown
                 items={Config.RequestKeys}
                 func={(selection) => {
-                  setSelectedOutData(parseInt(selection));
+                  setSelectedOutData(selection);
                 }}
                 lable={"Request keys list"}
               />
@@ -60,7 +62,7 @@ export const OutInResponseMap = observer(() => {
               <CustomDropdown
                 items={Object.keys(Config.Static)}
                 func={(selection) => {
-                  setSelectedOutData(parseInt(selection));
+                  setSelectedOutData(selection);
                 }}
                 lable={"Static Keys list"}
               />
@@ -70,7 +72,7 @@ export const OutInResponseMap = observer(() => {
               <CustomDropdown
                 items={Config.OutResponseKeys}
                 func={(selection) => {
-                  setSelectedOutData(parseInt(selection));
+                  setSelectedOutData(selection);
                 }}
                 lable={"Out Response values list"}
               />
@@ -78,7 +80,7 @@ export const OutInResponseMap = observer(() => {
             <CustomDropdown
               items={Config.InResponseValues}
               func={(selection) => {
-                setSelectedInData(parseInt(selection));
+                setSelectedInData(selection);
               }}
               lable={"In Response list"}
             />
@@ -105,7 +107,13 @@ export const OutInResponseMap = observer(() => {
         />
       </Card.Body>
       <Card.Footer>
-        <Button>Next</Button>
+        <Button
+          onClick={() => {
+            navigate("/success");
+          }}
+        >
+          Next
+        </Button>
       </Card.Footer>
     </Card>
   );

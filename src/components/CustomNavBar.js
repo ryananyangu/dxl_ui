@@ -1,16 +1,16 @@
 import { Link } from "react-router-dom";
-import { Navbar as RBNav, Nav, Container } from "react-bootstrap";
+import { Navbar, Nav, Container } from "react-bootstrap";
 
-export const Navbar = () => {
+export const CustomNavBar = () => {
   return (
     <>
-      <RBNav bg="light" expand="lg">
+      <Navbar bg="light" expand="lg">
         <Container>
-          <RBNav.Brand as={Link} to="/">
+          <Navbar.Brand as={Link} to="/">
             DXL
-          </RBNav.Brand>
-          <RBNav.Toggle aria-controls="basic-navbar-nav" />
-          <RBNav.Collapse id="basic-navbar-nav">
+          </Navbar.Brand>
+          <Navbar.Toggle aria-controls="basic-navbar-nav" />
+          <Navbar.Collapse id="basic-navbar-nav">
             <Nav className="me-auto">
               <Nav.Link as={Link} to="/">
                 Basics
@@ -46,9 +46,9 @@ export const Navbar = () => {
                 Complete
               </Nav.Link>
             </Nav>
-          </RBNav.Collapse>
+          </Navbar.Collapse>
         </Container>
-      </RBNav>
+      </Navbar>
     </>
   );
 };

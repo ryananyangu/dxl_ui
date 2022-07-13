@@ -3,8 +3,10 @@ import { Form, Button, Card } from "react-bootstrap";
 import { GlobalContext } from "../data/State";
 import { observer } from "mobx-react";
 import { runInAction } from "mobx";
+import { useNavigate } from "react-router-dom";
 export const RequestBasics = observer(() => {
   const config = useContext(GlobalContext);
+  const navigate = useNavigate();
 
   return (
     <Card>
@@ -76,9 +78,8 @@ export const RequestBasics = observer(() => {
       <Card.Footer>
         <Button
           onClick={() => {
-            runInAction(() => {
-              config.ActiveMenu = "second";
-            });
+            //FIXME: Validate the items above have been setup correctly
+            navigate("/headers");
           }}
         >
           Next

@@ -4,7 +4,7 @@ const CustomDropdown = ({ items, func }) => {
   return (
     <Form.Select
       onChange={(e) => {
-        func(e.currentTarget.value);
+        func(parseInt(e.currentTarget.value));
       }}
     >
       {items.map((item, index) => {

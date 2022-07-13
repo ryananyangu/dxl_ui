@@ -4,9 +4,11 @@ import { ListSelected } from "./ListSelected";
 import { observer } from "mobx-react";
 import { GlobalContext } from "../data/State";
 import { runInAction } from "mobx";
+import { useNavigate } from "react-router-dom";
 
 const HeaderSetup = observer(() => {
   const Config = useContext(GlobalContext);
+  const navigate = useNavigate();
 
   const [headerName, setHeaderName] = useState("");
   const [headerValue, setHeaderValue] = useState("");
@@ -62,9 +64,7 @@ const HeaderSetup = observer(() => {
       <Card.Footer>
         <Button
           onClick={() => {
-            runInAction(() => {
-              Config.ActiveMenu = "third";
-            });
+            navigate("/inrequest");
           }}
         >
           Next

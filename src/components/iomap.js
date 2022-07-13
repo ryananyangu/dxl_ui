@@ -2,12 +2,14 @@ import { runInAction } from "mobx";
 import { observer } from "mobx-react";
 import { useContext, useState } from "react";
 import { Button, Row, InputGroup, Card } from "react-bootstrap";
+import { useNavigate } from "react-router-dom";
 import { GlobalContext } from "../data/State";
 import CustomDropdown from "./CustomDropDown";
 import { ListSelected } from "./ListSelected";
 
 const InOutRequestMap = observer(() => {
   const Config = useContext(GlobalContext);
+  const navigate = useNavigate();
   const [selectedInData, setSelectedInData] = useState(0);
   const [selectedOutData, setSelectedOutData] = useState(0);
 
@@ -15,7 +17,7 @@ const InOutRequestMap = observer(() => {
     let indata = Config.RequestKeys[selectedInData];
     let outdata = Config.OutRequestValues[selectedOutData];
 
-    Config.Dynamic[indata] = outdata;
+    Config.Dynamic[outdata] = indata;
     setSelectedInData(0);
     setSelectedOutData(0);
   };
@@ -27,14 +29,14 @@ const InOutRequestMap = observer(() => {
         <Row>
           <InputGroup className="mb-3">
             <CustomDropdown
-              items={Config.RequestKeys}
-              func={setSelectedInData}
-              lable={"Input list"}
-            />
-            <CustomDropdown
               items={Config.OutRequestValues}
               func={setSelectedOutData}
-              lable={"Output list"}
+              lable={"Outgoing list"}
+            />
+            <CustomDropdown
+              items={Config.RequestKeys}
+              func={setSelectedInData}
+              lable={"Recieved list"}
             />
             <Button
               variant="success"
@@ -57,7 +59,13 @@ const InOutRequestMap = observer(() => {
         />
       </Card.Body>
       <Card.Footer>
-        <Button>Done</Button>
+        <Button
+          onClick={() => {
+            navigate("/statics");
+          }}
+        >
+          Next
+        </Button>
       </Card.Footer>
     </Card>
   );

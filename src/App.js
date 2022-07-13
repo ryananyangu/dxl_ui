@@ -1,18 +1,18 @@
-import { Container } from "react-bootstrap";
-import { RequestBasics } from "./components/RequestBasics";
-import InOutRequestMap from "./components/InOutRequestMap";
-import HeaderSetup from "./components/HeaderSetup";
+import { Button, Card, Container } from "react-bootstrap";
+import { RequestBasics } from "./components/basics";
+import InOutRequestMap from "./components/iomap";
+import HeaderSetup from "./components/headers";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { StaticInput } from "./components/StaticsInput";
-import OutResponseChecker from "./components/OutResponseChecker";
+import { StaticInput } from "./components/statics";
+import OutResponseChecker from "./components/successparams";
 import { useState } from "react";
 import { CustomAlert } from "./components/CustomAlert";
-import { OutInResponseMap } from "./components/OutInReponseMap";
+import { OutInResponseMap } from "./components/oimap";
 import { GlobalContext, GlobalConfig } from "./data/State";
 import { observer } from "mobx-react";
 import { runInAction } from "mobx";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import { Navbar } from "./components/Navbar";
+import { CustomNavBar } from "./components/CustomNavBar";
 import { CodeEditor } from "./components/CodeEditor";
 
 const HTTP_SUCCESS = 200;
@@ -73,7 +73,7 @@ const App = observer(() => {
       setErrMsg(error);
       return;
     }
-
+    setInRequest("");
     return response;
   };
 
@@ -124,7 +124,7 @@ const App = observer(() => {
               }}
             />
           )}
-          <Navbar />
+          <CustomNavBar />
           <br />
 
           <Routes>
@@ -138,9 +138,14 @@ const App = observer(() => {
                   lang={Config.InRequestType}
                   header={"In Request"}
                   data={inRequest}
-                  getTransFormedData={(value) => {
-                    runInAction(() => {
-                      setInRequest(value);
+                  onChange={(value) => {
+                    setInRequest(value);
+                  }}
+                  next={"/outrequest"}
+                  getTransFormedData={() => {
+                    runInAction(async () => {
+                      const response = await inRequestProcess();
+                      Config.RequestKeys = [...Object.keys(response)];
                     });
                   }}
                 />
@@ -154,9 +159,15 @@ const App = observer(() => {
                   lang={Config.OutRequestType}
                   header={"Out Request"}
                   data={Config.RequestTemplate}
-                  getTransFormedData={(value) => {
+                  onChange={(value) => {
                     runInAction(() => {
                       Config.RequestTemplate = value;
+                    });
+                  }}
+                  next={"/requestmap"}
+                  getTransFormedData={() => {
+                    runInAction(() => {
+                      outRequestProcess();
                     });
                   }}
                 />
@@ -173,8 +184,9 @@ const App = observer(() => {
                   header={"Out Response"}
                   data={outResponse}
                   onChange={(value) => {
-                    console.log(value);
+                    setOutResponse(value);
                   }}
+                  next={"/inreponse"}
                   getTransFormedData={() => {
                     runInAction(() => {
                       outResponseProcess();
@@ -194,7 +206,8 @@ const App = observer(() => {
                   onChange={(value) => {
                     Config.ResponseTemplate = value;
                   }}
-                  getTransFormedData={(value) => {
+                  next={"/responsemap"}
+                  getTransFormedData={() => {
                     runInAction(() => {
                       inResponseProcess();
                     });
@@ -204,7 +217,24 @@ const App = observer(() => {
             />
             <Route exact path="/responsemap" element={<OutInResponseMap />} />
             <Route exact path="/success" element={<OutResponseChecker />} />
-            <Route exact path="/complete" element={<>Comming soon !!!</>} />
+            <Route
+              exact
+              path="/complete"
+              element={
+                <>
+                  <Card>
+                    Comming soon !!!
+                    <Button
+                      onClick={() => {
+                        console.log(Config);
+                      }}
+                    >
+                      Check
+                    </Button>
+                  </Card>
+                </>
+              }
+            />
           </Routes>
         </Container>
       </GlobalContext.Provider>
