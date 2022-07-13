@@ -3,12 +3,12 @@ import { Form, Button, Card } from "react-bootstrap";
 import { GlobalContext } from "../data/State";
 import { observer } from "mobx-react";
 import { runInAction } from "mobx";
-export const RequestBasics = observer(({ lable }) => {
+export const RequestBasics = observer(() => {
   const config = useContext(GlobalContext);
 
   return (
     <Card>
-      <Card.Header>{lable}</Card.Header>
+      <Card.Header>{"Request Basics"}</Card.Header>
       <Card.Body>
         <Form>
           <Form.Group className="mb-3" controlId="">

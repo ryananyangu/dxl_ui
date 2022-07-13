@@ -6,7 +6,7 @@ import { GlobalContext } from "../data/State";
 import CustomDropdown from "./CustomDropDown";
 import { ListSelected } from "./ListSelected";
 
-export const StaticInput = observer(({ data, lable }) => {
+export const StaticInput = observer(() => {
   const Config = useContext(GlobalContext);
   const [selectedInput, setSelectedInput] = useState(0);
   const [staticValue, setStaticValue] = useState("");
@@ -18,7 +18,7 @@ export const StaticInput = observer(({ data, lable }) => {
     if (isCustom) {
       val = customValue;
     } else {
-      val = data[selectedInput];
+      val = Config.OutRequestValues[selectedInput];
     }
     Config.Static[val] = staticValue;
     setSelectedInput(0);
@@ -27,7 +27,7 @@ export const StaticInput = observer(({ data, lable }) => {
   };
   return (
     <Card>
-      <Card.Header>{lable}</Card.Header>
+      <Card.Header>{"Statics Setup"}</Card.Header>
       <Card.Body>
         <Row>
           <InputGroup>
@@ -38,7 +38,10 @@ export const StaticInput = observer(({ data, lable }) => {
               }}
             />
             {!isCustom ? (
-              <CustomDropdown items={data} func={setSelectedInput} />
+              <CustomDropdown
+                items={Config.OutRequestValues}
+                func={setSelectedInput}
+              />
             ) : (
               <Form.Control
                 type="text"

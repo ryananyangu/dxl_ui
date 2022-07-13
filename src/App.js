@@ -1,7 +1,6 @@
-import { Container, Card, Button } from "react-bootstrap";
+import { Container } from "react-bootstrap";
 import { RequestBasics } from "./components/RequestBasics";
 import InOutRequestMap from "./components/InOutRequestMap";
-import Editor from "@monaco-editor/react";
 import HeaderSetup from "./components/HeaderSetup";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { StaticInput } from "./components/StaticsInput";
@@ -14,6 +13,7 @@ import { observer } from "mobx-react";
 import { runInAction } from "mobx";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Navbar } from "./components/Navbar";
+import { CodeEditor } from "./components/CodeEditor";
 
 const HTTP_SUCCESS = 200;
 const FLATJSONURL = "http://0.0.0.0:8080/api/v1/process/jsonflatten";
@@ -124,150 +124,87 @@ const App = observer(() => {
               }}
             />
           )}
+          <Navbar />
           <br />
 
-          <Navbar />
-
           <Routes>
-            <Route exact path="/">
-              <RequestBasics lable={"Request Basics"} />
-            </Route>
-            <Route exact path="/headers">
-              <HeaderSetup lable={"Headers Setup"} />
-            </Route>
-            <Route exact path="/inrequest">
-              <Card>
-                <Card.Header>{"In Request"}</Card.Header>
-                <Card.Body>
-                  <Editor
-                    height="50vh"
-                    defaultLanguage={Config.InRequestType}
-                    defaultValue={inRequest}
-                    theme="vs-dark"
-                    onChange={(value) => {
+            <Route exact path="/" element={<RequestBasics />} />
+            <Route exact path="/headers" element={<HeaderSetup />} />
+            <Route
+              exact
+              path="/inrequest"
+              element={
+                <CodeEditor
+                  lang={Config.InRequestType}
+                  header={"In Request"}
+                  data={inRequest}
+                  getTransFormedData={(value) => {
+                    runInAction(() => {
                       setInRequest(value);
-                    }}
-                  />
-                  <Button
-                    variant="primary"
-                    onClick={() => {
-                      runInAction(async () => {
-                        const response = await inRequestProcess();
-                        Config.RequestKeys = [...Object.keys(response)];
-                      });
-                    }}
-                  >
-                    Convert code
-                  </Button>
-                </Card.Body>
-              </Card>
-            </Route>
-            <Route exact path="/outrequest">
-              <Card>
-                <Card.Header>{"Out Request"}</Card.Header>
-                <Card.Body>
-                  <Editor
-                    height="50vh"
-                    defaultLanguage={Config.OutRequestType}
-                    defaultValue={Config.RequestTemplate}
-                    theme="vs-dark"
-                    onChange={(value) => {
-                      runInAction(() => {
-                        Config.RequestTemplate = value;
-                      });
-                    }}
-                  />
-                  <Button
-                    variant="primary"
-                    onClick={() => {
-                      runInAction(() => {
-                        outRequestProcess();
-                      });
-                    }}
-                  >
-                    Convert code
-                  </Button>
-                </Card.Body>
-              </Card>
-            </Route>
-            <Route exact path="/requestmap">
-              <InOutRequestMap
-                lable={"In to Out Request Map"}
-                inlist={Config.RequestKeys}
-                outlist={Config.OutRequestValues}
-              />
-            </Route>
-            <Route exact path="/statics">
-              <StaticInput
-                data={Config.OutRequestValues}
-                lable={"Statics Setup"}
-              />
-            </Route>
-            <Route exact path="/outresponse">
-              <Card>
-                <Card.Header>{"Out Response"}</Card.Header>
-                <Card.Body>
-                  <Editor
-                    height="50vh"
-                    defaultLanguage={Config.OutRequestType}
-                    defaultValue={outResponse}
-                    theme="vs-dark"
-                    onChange={(value) => {
-                      runInAction(() => {
-                        setOutResponse(value);
-                      });
-                    }}
-                  />
-                  <Button
-                    variant="primary"
-                    onClick={() => {
-                      runInAction(() => {
-                        outResponseProcess();
-                      });
-                    }}
-                  >
-                    Convert code
-                  </Button>
-                </Card.Body>
-              </Card>
-            </Route>
-            <Route exact path="/inreponse">
-              <Card>
-                <Card.Header>{"In Response"}</Card.Header>
-                <Card.Body>
-                  <Editor
-                    height="50vh"
-                    defaultLanguage={Config.InRequestType}
-                    defaultValue={Config.ResponseTemplate}
-                    theme="vs-dark"
-                    onChange={(value) => {
-                      runInAction(() => {
-                        Config.ResponseTemplate = value;
-                      });
-                    }}
-                  />
-                  <Button
-                    variant="primary"
-                    onClick={() => {
-                      runInAction(() => {
-                        inResponseProcess();
-                      });
-                    }}
-                  >
-                    Convert code
-                  </Button>
-                </Card.Body>
-              </Card>
-            </Route>
-            <Route exact path="/responsemap">
-              <OutInResponseMap />
-            </Route>
-            <Route exact path="/success">
-              <OutResponseChecker lable={"Out to In Response Map"} />
-            </Route>
-            <Route exact path="/complete">
-              <>Comming soon !!!</>
-            </Route>
+                    });
+                  }}
+                />
+              }
+            />
+            <Route
+              exact
+              path="/outrequest"
+              element={
+                <CodeEditor
+                  lang={Config.OutRequestType}
+                  header={"Out Request"}
+                  data={Config.RequestTemplate}
+                  getTransFormedData={(value) => {
+                    runInAction(() => {
+                      Config.RequestTemplate = value;
+                    });
+                  }}
+                />
+              }
+            />
+            <Route exact path="/requestmap" element={<InOutRequestMap />} />
+            <Route exact path="/statics" element={<StaticInput />} />
+            <Route
+              exact
+              path="/outresponse"
+              element={
+                <CodeEditor
+                  lang={Config.OutRequestType}
+                  header={"Out Response"}
+                  data={outResponse}
+                  onChange={(value) => {
+                    console.log(value);
+                  }}
+                  getTransFormedData={() => {
+                    runInAction(() => {
+                      outResponseProcess();
+                    });
+                  }}
+                />
+              }
+            />
+            <Route
+              exact
+              path="/inreponse"
+              element={
+                <CodeEditor
+                  lang={Config.InRequestType}
+                  header={"Out Response"}
+                  data={Config.ResponseTemplate}
+                  onChange={(value) => {
+                    Config.ResponseTemplate = value;
+                  }}
+                  getTransFormedData={(value) => {
+                    runInAction(() => {
+                      inResponseProcess();
+                    });
+                  }}
+                />
+              }
+            />
+            <Route exact path="/responsemap" element={<OutInResponseMap />} />
+            <Route exact path="/success" element={<OutResponseChecker />} />
+            <Route exact path="/complete" element={<>Comming soon !!!</>} />
           </Routes>
         </Container>
       </GlobalContext.Provider>

@@ -5,7 +5,7 @@ import { observer } from "mobx-react";
 import { GlobalContext } from "../data/State";
 import { runInAction } from "mobx";
 
-const HeaderSetup = observer(({ lable }) => {
+const HeaderSetup = observer(() => {
   const Config = useContext(GlobalContext);
 
   const [headerName, setHeaderName] = useState("");
@@ -21,7 +21,7 @@ const HeaderSetup = observer(({ lable }) => {
 
   return (
     <Card>
-      <Card.Header>{lable}</Card.Header>
+      <Card.Header>{"Headers Setup"}</Card.Header>
       <Card.Body>
         <Row>
           <InputGroup>

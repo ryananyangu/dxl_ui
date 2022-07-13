@@ -6,14 +6,14 @@ import { GlobalContext } from "../data/State";
 import CustomDropdown from "./CustomDropDown";
 import { ListSelected } from "./ListSelected";
 
-const InOutRequestMap = observer(({ inlist, outlist, lable }) => {
+const InOutRequestMap = observer(() => {
   const Config = useContext(GlobalContext);
   const [selectedInData, setSelectedInData] = useState(0);
   const [selectedOutData, setSelectedOutData] = useState(0);
 
   const handleAddMapping = (e) => {
-    let indata = inlist[selectedInData];
-    let outdata = outlist[selectedOutData];
+    let indata = Config.RequestKeys[selectedInData];
+    let outdata = Config.OutRequestValues[selectedOutData];
 
     Config.Dynamic[indata] = outdata;
     setSelectedInData(0);
@@ -22,17 +22,17 @@ const InOutRequestMap = observer(({ inlist, outlist, lable }) => {
 
   return (
     <Card>
-      <Card.Header>{lable}</Card.Header>
+      <Card.Header>{"In to Out Request Map"}</Card.Header>
       <Card.Body>
         <Row>
           <InputGroup className="mb-3">
             <CustomDropdown
-              items={inlist}
+              items={Config.RequestKeys}
               func={setSelectedInData}
               lable={"Input list"}
             />
             <CustomDropdown
-              items={outlist}
+              items={Config.OutRequestValues}
               func={setSelectedOutData}
               lable={"Output list"}
             />

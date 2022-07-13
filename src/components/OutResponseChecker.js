@@ -5,12 +5,12 @@ import { Card, Button } from "react-bootstrap";
 import { GlobalContext } from "../data/State";
 import TextInputDynamic from "./TextInputDynamic";
 
-const OutResponseChecker = observer(({ lable }) => {
+const OutResponseChecker = observer(() => {
   const Config = useContext(GlobalContext);
   return (
     <>
       <Card>
-        <Card.Header>{lable}</Card.Header>
+        <Card.Header>{"Out to In Response Map"}</Card.Header>
         <Card.Body>
           <TextInputDynamic
             name={"Code"}

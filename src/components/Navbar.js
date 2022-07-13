@@ -6,43 +6,45 @@ export const Navbar = () => {
     <>
       <RBNav bg="light" expand="lg">
         <Container>
-          <RBNav.Brand href="#home">DXL</RBNav.Brand>
+          <RBNav.Brand as={Link} to="/">
+            DXL
+          </RBNav.Brand>
           <RBNav.Toggle aria-controls="basic-navbar-nav" />
           <RBNav.Collapse id="basic-navbar-nav">
             <Nav className="me-auto">
-              <Nav.Item>
-                <Link to="/">Basics</Link>
-              </Nav.Item>
-              <Nav.Item>
-                <Link to="/headers">Headers</Link>
-              </Nav.Item>
-              <Nav.Item>
-                <Link to="/inrequest">In Request</Link>
-              </Nav.Item>
-              <Nav.Item>
-                <Link to="/outrequest">Out Request</Link>
-              </Nav.Item>
-              <Nav.Item>
-                <Link to="/requestmap">Request map</Link>
-              </Nav.Item>
-              <Nav.Item>
-                <Link to="/statics">Statics</Link>
-              </Nav.Item>
-              <Nav.Item>
-                <Link to="/outresponse">Out Response</Link>
-              </Nav.Item>
-              <Nav.Item>
-                <Link to="/inreponse">In Response</Link>
-              </Nav.Item>
-              <Nav.Item>
-                <Link to="/responsemap">Response map</Link>
-              </Nav.Item>
-              <Nav.Item>
-                <Link to="/success">OK Check</Link>
-              </Nav.Item>
-              <Nav.Item>
-                <Link to="/complete">Complete</Link>
-              </Nav.Item>
+              <Nav.Link as={Link} to="/">
+                Basics
+              </Nav.Link>
+              <Nav.Link as={Link} to="/headers">
+                Headers
+              </Nav.Link>
+              <Nav.Link as={Link} to="/inrequest">
+                In Request
+              </Nav.Link>
+              <Nav.Link as={Link} to="/outrequest">
+                Out Request
+              </Nav.Link>
+              <Nav.Link as={Link} to="/requestmap">
+                Request map
+              </Nav.Link>
+              <Nav.Link as={Link} to="/statics">
+                Statics
+              </Nav.Link>
+              <Nav.Link as={Link} to="/outresponse">
+                Out Response
+              </Nav.Link>
+              <Nav.Link as={Link} to="/inreponse">
+                In Response
+              </Nav.Link>
+              <Nav.Link as={Link} to="/responsemap">
+                Response map
+              </Nav.Link>
+              <Nav.Link as={Link} to="/success">
+                OK Check
+              </Nav.Link>
+              <Nav.Link as={Link} to="/complete">
+                Complete
+              </Nav.Link>
             </Nav>
           </RBNav.Collapse>
         </Container>
