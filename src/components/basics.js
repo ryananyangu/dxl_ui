@@ -4,6 +4,7 @@ import { GlobalContext } from "../data/State";
 import { observer } from "mobx-react";
 import { runInAction } from "mobx";
 import { useNavigate } from "react-router-dom";
+import { ObjectID } from "bson";
 export const RequestBasics = observer(() => {
   const config = useContext(GlobalContext);
   const navigate = useNavigate();
@@ -78,6 +79,10 @@ export const RequestBasics = observer(() => {
       <Card.Footer>
         <Button
           onClick={() => {
+            runInAction(() => {
+              const id = new ObjectID();
+              config.ServiceCode = id.toString();
+            });
             //FIXME: Validate the items above have been setup correctly
             navigate("/headers");
           }}
