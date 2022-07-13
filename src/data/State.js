@@ -32,7 +32,6 @@ export class GlobalConfig {
   DynamicKeys = [];
   OutResponseKeys = [];
   InResponseValues = [];
-  ActiveMenu = "first";
 }
 
 export const GlobalContext = createContext(null);

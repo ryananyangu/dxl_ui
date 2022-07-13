@@ -1,13 +1,4 @@
-import {
-  Container,
-  Row,
-  Col,
-  Tab,
-  Nav,
-  ProgressBar,
-  Card,
-  Button,
-} from "react-bootstrap";
+import { Container, Card, Button } from "react-bootstrap";
 import { RequestBasics } from "./components/RequestBasics";
 import InOutRequestMap from "./components/InOutRequestMap";
 import Editor from "@monaco-editor/react";
@@ -21,6 +12,8 @@ import { OutInResponseMap } from "./components/OutInReponseMap";
 import { GlobalContext, GlobalConfig } from "./data/State";
 import { observer } from "mobx-react";
 import { runInAction } from "mobx";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { Navbar } from "./components/Navbar";
 
 const HTTP_SUCCESS = 200;
 const FLATJSONURL = "http://0.0.0.0:8080/api/v1/process/jsonflatten";
@@ -119,223 +112,166 @@ const App = observer(() => {
   };
 
   return (
-    <GlobalContext.Provider value={Config}>
-      <Container fluid>
-        {errMsg && (
-          <CustomAlert
-            body={errMsg}
-            variant={"danger"}
-            onClose={() => {
-              setErrMsg("");
-            }}
-          />
-        )}
-        <br />
-        <Tab.Container id="left-tabs-example" defaultActiveKey="first">
-          <Row>
-            <ProgressBar>
-              <ProgressBar variant="success" now={0} />
-            </ProgressBar>
-          </Row>
+    <BrowserRouter>
+      <GlobalContext.Provider value={Config}>
+        <Container>
+          {errMsg && (
+            <CustomAlert
+              body={errMsg}
+              variant={"danger"}
+              onClose={() => {
+                setErrMsg("");
+              }}
+            />
+          )}
           <br />
-          <Row>
-            <Col sm={2}>
-              <Nav
-                variant="pills"
-                className="flex-column"
-                activeKey={Config.ActiveMenu}
-              >
-                <Nav.Item>
-                  <Nav.Link eventKey="first">Requests Basics</Nav.Link>
-                </Nav.Item>
 
-                <Nav.Item>
-                  <Nav.Link eventKey="second">Headers Setup</Nav.Link>
-                </Nav.Item>
+          <Navbar />
 
-                <Nav.Item>
-                  <Nav.Link eventKey="third">In Request</Nav.Link>
-                </Nav.Item>
-
-                <Nav.Item>
-                  <Nav.Link eventKey="fourth">Out request</Nav.Link>
-                </Nav.Item>
-
-                <Nav.Item>
-                  <Nav.Link eventKey="fifth">In to Out Request Map</Nav.Link>
-                </Nav.Item>
-
-                <Nav.Item>
-                  <Nav.Link eventKey="sixth">Statics Map</Nav.Link>
-                </Nav.Item>
-                <Nav.Item>
-                  <Nav.Link eventKey="seventh">Out Response</Nav.Link>
-                </Nav.Item>
-
-                <Nav.Item>
-                  <Nav.Link eventKey="eigth">In Response</Nav.Link>
-                </Nav.Item>
-
-                <Nav.Item>
-                  <Nav.Link eventKey="nineth">Out Success Check</Nav.Link>
-                </Nav.Item>
-
-                <Nav.Item>
-                  <Nav.Link eventKey="tenth">Out to In Response Map</Nav.Link>
-                </Nav.Item>
-                <Nav.Item>
-                  <Nav.Link eventKey="eleventh">Complete setup</Nav.Link>
-                </Nav.Item>
-              </Nav>
-            </Col>
-            <Col sm={8}>
-              <Tab.Content>
-                <Tab.Pane eventKey="first">
-                  <RequestBasics lable={"Request Basics"} />
-                </Tab.Pane>
-                <Tab.Pane eventKey="second">
-                  <HeaderSetup lable={"Headers Setup"} />
-                </Tab.Pane>
-
-                <Tab.Pane eventKey="third">
-                  <Card>
-                    <Card.Header>{"In Request"}</Card.Header>
-                    <Card.Body>
-                      <Editor
-                        height="50vh"
-                        defaultLanguage={Config.InRequestType}
-                        defaultValue={inRequest}
-                        theme="vs-dark"
-                        onChange={(value) => {
-                          setInRequest(value);
-                        }}
-                      />
-                      <Button
-                        variant="primary"
-                        onClick={() => {
-                          runInAction(async () => {
-                            const response = await inRequestProcess();
-                            Config.RequestKeys = [...Object.keys(response)];
-                          });
-                        }}
-                      >
-                        Convert code
-                      </Button>
-                    </Card.Body>
-                  </Card>
-                </Tab.Pane>
-
-                <Tab.Pane eventKey="fourth">
-                  <Card>
-                    <Card.Header>{"Out Request"}</Card.Header>
-                    <Card.Body>
-                      <Editor
-                        height="50vh"
-                        defaultLanguage={Config.OutRequestType}
-                        defaultValue={Config.RequestTemplate}
-                        theme="vs-dark"
-                        onChange={(value) => {
-                          runInAction(() => {
-                            Config.RequestTemplate = value;
-                          });
-                        }}
-                      />
-                      <Button
-                        variant="primary"
-                        onClick={() => {
-                          runInAction(() => {
-                            outRequestProcess();
-                          });
-                        }}
-                      >
-                        Convert code
-                      </Button>
-                    </Card.Body>
-                  </Card>
-                </Tab.Pane>
-
-                <Tab.Pane eventKey="fifth">
-                  <InOutRequestMap
-                    lable={"In to Out Request Map"}
-                    inlist={Config.RequestKeys}
-                    outlist={Config.OutRequestValues}
+          <Routes>
+            <Route exact path="/">
+              <RequestBasics lable={"Request Basics"} />
+            </Route>
+            <Route exact path="/headers">
+              <HeaderSetup lable={"Headers Setup"} />
+            </Route>
+            <Route exact path="/inrequest">
+              <Card>
+                <Card.Header>{"In Request"}</Card.Header>
+                <Card.Body>
+                  <Editor
+                    height="50vh"
+                    defaultLanguage={Config.InRequestType}
+                    defaultValue={inRequest}
+                    theme="vs-dark"
+                    onChange={(value) => {
+                      setInRequest(value);
+                    }}
                   />
-                </Tab.Pane>
-                <Tab.Pane eventKey="sixth">
-                  <StaticInput
-                    data={Config.OutRequestValues}
-                    lable={"Statics Setup"}
+                  <Button
+                    variant="primary"
+                    onClick={() => {
+                      runInAction(async () => {
+                        const response = await inRequestProcess();
+                        Config.RequestKeys = [...Object.keys(response)];
+                      });
+                    }}
+                  >
+                    Convert code
+                  </Button>
+                </Card.Body>
+              </Card>
+            </Route>
+            <Route exact path="/outrequest">
+              <Card>
+                <Card.Header>{"Out Request"}</Card.Header>
+                <Card.Body>
+                  <Editor
+                    height="50vh"
+                    defaultLanguage={Config.OutRequestType}
+                    defaultValue={Config.RequestTemplate}
+                    theme="vs-dark"
+                    onChange={(value) => {
+                      runInAction(() => {
+                        Config.RequestTemplate = value;
+                      });
+                    }}
                   />
-                </Tab.Pane>
-                <Tab.Pane eventKey="seventh">
-                  <Card>
-                    <Card.Header>{"Out Response"}</Card.Header>
-                    <Card.Body>
-                      <Editor
-                        height="50vh"
-                        defaultLanguage={Config.OutRequestType}
-                        defaultValue={outResponse}
-                        theme="vs-dark"
-                        onChange={(value) => {
-                          runInAction(() => {
-                            setOutResponse(value);
-                          });
-                        }}
-                      />
-                      <Button
-                        variant="primary"
-                        onClick={() => {
-                          runInAction(() => {
-                            outResponseProcess();
-                          });
-                        }}
-                      >
-                        Convert code
-                      </Button>
-                    </Card.Body>
-                  </Card>
-                </Tab.Pane>
-                <Tab.Pane eventKey="eigth">
-                  <Card>
-                    <Card.Header>{"In Response"}</Card.Header>
-                    <Card.Body>
-                      <Editor
-                        height="50vh"
-                        defaultLanguage={Config.InRequestType}
-                        defaultValue={Config.ResponseTemplate}
-                        theme="vs-dark"
-                        onChange={(value) => {
-                          runInAction(() => {
-                            Config.ResponseTemplate = value;
-                          });
-                        }}
-                      />
-                      <Button
-                        variant="primary"
-                        onClick={() => {
-                          runInAction(() => {
-                            inResponseProcess();
-                          });
-                        }}
-                      >
-                        Convert code
-                      </Button>
-                    </Card.Body>
-                  </Card>
-                </Tab.Pane>
-                <Tab.Pane eventKey="nineth">
-                  <OutResponseChecker lable={"Out to In Response Map"} />
-                </Tab.Pane>
-                <Tab.Pane eventKey={"tenth"}>
-                  <OutInResponseMap />
-                </Tab.Pane>
-                <Tab.Pane eventKey="eleventh">Comming soon !!!</Tab.Pane>
-              </Tab.Content>
-            </Col>
-          </Row>
-        </Tab.Container>
-      </Container>
-    </GlobalContext.Provider>
+                  <Button
+                    variant="primary"
+                    onClick={() => {
+                      runInAction(() => {
+                        outRequestProcess();
+                      });
+                    }}
+                  >
+                    Convert code
+                  </Button>
+                </Card.Body>
+              </Card>
+            </Route>
+            <Route exact path="/requestmap">
+              <InOutRequestMap
+                lable={"In to Out Request Map"}
+                inlist={Config.RequestKeys}
+                outlist={Config.OutRequestValues}
+              />
+            </Route>
+            <Route exact path="/statics">
+              <StaticInput
+                data={Config.OutRequestValues}
+                lable={"Statics Setup"}
+              />
+            </Route>
+            <Route exact path="/outresponse">
+              <Card>
+                <Card.Header>{"Out Response"}</Card.Header>
+                <Card.Body>
+                  <Editor
+                    height="50vh"
+                    defaultLanguage={Config.OutRequestType}
+                    defaultValue={outResponse}
+                    theme="vs-dark"
+                    onChange={(value) => {
+                      runInAction(() => {
+                        setOutResponse(value);
+                      });
+                    }}
+                  />
+                  <Button
+                    variant="primary"
+                    onClick={() => {
+                      runInAction(() => {
+                        outResponseProcess();
+                      });
+                    }}
+                  >
+                    Convert code
+                  </Button>
+                </Card.Body>
+              </Card>
+            </Route>
+            <Route exact path="/inreponse">
+              <Card>
+                <Card.Header>{"In Response"}</Card.Header>
+                <Card.Body>
+                  <Editor
+                    height="50vh"
+                    defaultLanguage={Config.InRequestType}
+                    defaultValue={Config.ResponseTemplate}
+                    theme="vs-dark"
+                    onChange={(value) => {
+                      runInAction(() => {
+                        Config.ResponseTemplate = value;
+                      });
+                    }}
+                  />
+                  <Button
+                    variant="primary"
+                    onClick={() => {
+                      runInAction(() => {
+                        inResponseProcess();
+                      });
+                    }}
+                  >
+                    Convert code
+                  </Button>
+                </Card.Body>
+              </Card>
+            </Route>
+            <Route exact path="/responsemap">
+              <OutInResponseMap />
+            </Route>
+            <Route exact path="/success">
+              <OutResponseChecker lable={"Out to In Response Map"} />
+            </Route>
+            <Route exact path="/complete">
+              <>Comming soon !!!</>
+            </Route>
+          </Routes>
+        </Container>
+      </GlobalContext.Provider>
+    </BrowserRouter>
   );
 });
 
