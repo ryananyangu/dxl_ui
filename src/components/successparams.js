@@ -5,8 +5,8 @@ import { Card, Button, InputGroup, Form } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { GlobalContext } from "../data/State";
 import CustomDropdown from "./CustomDropDown";
+import { SUCCESS_TYPES } from "../utils/constants";
 
-const SUCCESS_TYPES = ["PAYLOAD", "HTTP"];
 const OutResponseChecker = observer(() => {
   const [selectedSuccess, setSelectedSuccess] = useState(0);
   const Config = useContext(GlobalContext);
@@ -39,7 +39,7 @@ const OutResponseChecker = observer(() => {
                 items={Config.OutResponseKeys}
                 func={(value) => {
                   runInAction(() => {
-                    Config.Success.Path = Config.OutResponseKeys[value];
+                    Config.Success.Path = SUCCESS_TYPES[value];
                   });
                 }}
               />

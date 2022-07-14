@@ -17,7 +17,9 @@ const InOutRequestMap = observer(() => {
     let indata = Config.RequestKeys[selectedInData];
     let outdata = Config.OutRequestValues[selectedOutData];
 
-    Config.Dynamic[outdata] = indata;
+    // .replace(/[{}]/g,'')
+
+    Config.Dynamic[outdata.replace(/[{}]/g, "")] = indata.replace(/[{}]/g, "");
     setSelectedInData(0);
     setSelectedOutData(0);
   };

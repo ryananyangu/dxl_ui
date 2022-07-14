@@ -20,7 +20,7 @@ export const StaticInput = observer(() => {
     if (isCustom) {
       val = customValue;
     } else {
-      val = Config.OutRequestValues[selectedInput];
+      val = Config.OutRequestValues[selectedInput].replace(/[{}]/g, "");
     }
     Config.Static[val] = staticValue;
     setSelectedInput(0);

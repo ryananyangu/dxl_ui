@@ -28,8 +28,6 @@ export class GlobalConfig {
   // None Payload trackers
   RequestKeys = [];
   OutRequestValues = [];
-  StaticKeys = [];
-  DynamicKeys = [];
   OutResponseKeys = [];
   InResponseValues = [];
 }

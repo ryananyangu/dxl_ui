@@ -14,10 +14,12 @@ import { runInAction } from "mobx";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { CustomNavBar } from "./components/CustomNavBar";
 import { CodeEditor } from "./components/CodeEditor";
-
-const HTTP_SUCCESS = 200;
-const FLATJSONURL = "http://0.0.0.0:8080/api/v1/process/jsonflatten";
-const XML2FLATJSON = "http://0.0.0.0:8080/api/v1/process/xmltoflatjson";
+import {
+  FLATJSON_URL,
+  HTTP_SUCCESS,
+  PROCESS_ADD_URL,
+  XML2FLATJSON_URL,
+} from "./utils/constants.js";
 
 const Config = new GlobalConfig();
 
@@ -52,10 +54,10 @@ const App = observer(() => {
     let response = {};
     if (type === "json") {
       let process_header = { "Content-Type": "application/json" };
-      response = await sendPostRequest(data, process_header, FLATJSONURL);
+      response = await sendPostRequest(data, process_header, FLATJSON_URL);
     } else if (type === "xml") {
       let process_header = { "Content-Type": "application/xml" };
-      response = await sendPostRequest(data, process_header, XML2FLATJSON);
+      response = await sendPostRequest(data, process_header, XML2FLATJSON_URL);
     } else {
       response.response = "";
       response.err = "Unknown type" + Config.InRequestType;
@@ -225,8 +227,13 @@ const App = observer(() => {
                   <Card>
                     Comming soon !!!
                     <Button
-                      onClick={() => {
-                        console.log(Config);
+                      onClick={async () => {
+                        let resp = await sendPostRequest(
+                          JSON.stringify(Config),
+                          { "Content-Type": "application/json" },
+                          PROCESS_ADD_URL
+                        );
+                        console.log(resp);
                       }}
                     >
                       Check

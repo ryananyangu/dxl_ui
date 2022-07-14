@@ -17,7 +17,7 @@ export const CodeEditor = observer(
             defaultValue={data}
             theme="vs-dark"
             onChange={(value) => {
-              onChange(value);
+              onChange(value.replace(/[\r\n\t]/gm, ""));
             }}
           />
           <Button

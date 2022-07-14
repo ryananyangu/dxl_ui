@@ -17,17 +17,21 @@ export const OutInResponseMap = observer(() => {
   const [selectedType, setSelectedType] = useState(0);
 
   const handleAddMapping = () => {
-    console.log(selectedOutData, selectedInData);
+    // console.log(selectedOutData, selectedInData);
     let val = "";
     if (selectedType === 0) {
-      val = "in_request." + Config.RequestKeys[selectedOutData];
+      val =
+        "in_request." +
+        Config.RequestKeys[selectedOutData].replace(/[{}]/g, "");
     } else if (selectedType === 1) {
-      val = "static." + Object.keys(Config.Static)[selectedOutData];
+      val =
+        "static." +
+        Object.keys(Config.Static)[selectedOutData].replace(/[{}]/g, "");
     } else {
-      val = Config.OutResponseKeys[selectedOutData];
+      val = Config.OutResponseKeys[selectedOutData].replace(/[{}]/g, "");
     }
 
-    let indata = Config.InResponseValues[selectedInData];
+    let indata = Config.InResponseValues[selectedInData].replace(/[{}]/g, "");
     Config.ResponseDynamic[indata] = val;
     setSelectedInData(0);
     setSelectedOutData(0);
