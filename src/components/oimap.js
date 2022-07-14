@@ -17,7 +17,6 @@ export const OutInResponseMap = observer(() => {
   const [selectedType, setSelectedType] = useState(0);
 
   const handleAddMapping = () => {
-    // console.log(selectedOutData, selectedInData);
     let val = "";
     if (selectedType === 0) {
       val =

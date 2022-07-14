@@ -1,7 +1,7 @@
 const HTTP_SUCCESS = 200;
-const FLATJSON_URL = "http://0.0.0.0:8080/api/v1/process/jsonflatten";
-const XML2FLATJSON_URL = "http://0.0.0.0:8080/api/v1/process/xmltoflatjson";
-const PROCESS_ADD_URL = "http://0.0.0.0:8080/api/v1/process/add";
+const FLATJSON_URL = "/process/jsonflatten";
+const XML2FLATJSON_URL = "/process/xmltoflatjson";
+const PROCESS_ADD_URL = "/process/add";
 const SUCCESS_TYPES = ["PAYLOAD", "HTTP"];
 
 export {

@@ -17,7 +17,7 @@ const InOutRequestMap = observer(() => {
     let indata = Config.RequestKeys[selectedInData];
     let outdata = Config.OutRequestValues[selectedOutData];
 
-    // .replace(/[{}]/g,'')
+    delete Config.OutRequestValues[selectedOutData];
 
     Config.Dynamic[outdata.replace(/[{}]/g, "")] = indata.replace(/[{}]/g, "");
     setSelectedInData(0);
@@ -55,6 +55,8 @@ const InOutRequestMap = observer(() => {
           items={Config.Dynamic}
           func={(item) => {
             runInAction(() => {
+              // FIXME: On this we are not being updates on change
+              Config.OutRequestValues.push(`{${item}}`);
               delete Config.Dynamic[item];
             });
           }}
