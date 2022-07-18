@@ -1,4 +1,4 @@
-import { Button, Card, Container } from "react-bootstrap";
+import { Container } from "react-bootstrap";
 import { RequestBasics } from "./components/basics";
 import InOutRequestMap from "./components/iomap";
 import HeaderSetup from "./components/headers";
@@ -20,6 +20,7 @@ import {
   PROCESS_ADD_URL,
   XML2FLATJSON_URL,
 } from "./utils/constants.js";
+import { CustomContainer } from "./components/customContainer";
 
 const Config = new GlobalConfig();
 
@@ -126,9 +127,7 @@ const App = observer(() => {
               }}
             />
           )}
-          <CustomNavBar />
-          <br />
-
+          <CustomNavBar>
           <Routes>
             <Route exact path="/" element={<RequestBasics />} />
             <Route exact path="/headers" element={<HeaderSetup />} />
@@ -224,9 +223,7 @@ const App = observer(() => {
               path="/complete"
               element={
                 <>
-                  <Card>
-                    Comming soon !!!
-                    <Button
+                  <CustomContainer controls={<button
                       onClick={async () => {
                         let resp = await sendPostRequest(
                           JSON.stringify(Config),
@@ -237,12 +234,14 @@ const App = observer(() => {
                       }}
                     >
                       Check
-                    </Button>
-                  </Card>
+                    </button>}>
+                    Comming soon !!!
+                  </CustomContainer>
                 </>
               }
             />
           </Routes>
+          </CustomNavBar>
         </Container>
       </GlobalContext.Provider>
     </BrowserRouter>

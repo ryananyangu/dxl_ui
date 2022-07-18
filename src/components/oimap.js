@@ -1,4 +1,4 @@
-import { Button, Card, InputGroup, Row } from "react-bootstrap";
+import { Button, InputGroup, Row } from "react-bootstrap";
 import CustomDropdown from "./CustomDropDown";
 import { ListSelected } from "./ListSelected";
 import { useContext, useState } from "react";
@@ -6,6 +6,7 @@ import { observer } from "mobx-react";
 import { GlobalContext } from "../data/State";
 import { runInAction } from "mobx";
 import { useNavigate } from "react-router-dom";
+import { CustomContainer } from "./customContainer";
 
 const MAP_TYPE = ["IN_REQUEST", "STATIC", "OUT_RESPONSE"];
 export const OutInResponseMap = observer(() => {
@@ -37,9 +38,13 @@ export const OutInResponseMap = observer(() => {
   };
 
   return (
-    <Card>
-      <Card.Header>{"Out to in Response Map"}</Card.Header>
-      <Card.Body>
+    <CustomContainer title="Out to in Response Map" controls={<button
+      onClick={() => {
+        navigate("/success");
+      }}
+    >
+      Next
+    </button>}>
         <Row>
           <InputGroup className="mb-3">
             <CustomDropdown
@@ -108,16 +113,6 @@ export const OutInResponseMap = observer(() => {
             });
           }}
         />
-      </Card.Body>
-      <Card.Footer>
-        <Button
-          onClick={() => {
-            navigate("/success");
-          }}
-        >
-          Next
-        </Button>
-      </Card.Footer>
-    </Card>
+    </CustomContainer>
   );
 });

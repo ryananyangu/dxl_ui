@@ -1,39 +1,34 @@
 import Editor from "@monaco-editor/react";
-import { Card, Button } from "react-bootstrap";
 import { observer } from "mobx-react";
 import { runInAction } from "mobx";
 import { useNavigate } from "react-router-dom";
+import { CustomContainer } from "./customContainer";
 
 export const CodeEditor = observer(
   ({ lang, header, data, getTransFormedData, onChange, next }) => {
     const navigate = useNavigate();
     return (
-      <Card>
-        <Card.Header>{header}</Card.Header>
-        <Card.Body>
+      <CustomContainer title={header} controls={<button
+        onClick={() => {
+          runInAction(() => {
+            getTransFormedData();
+            console.log(next);
+            navigate(next);
+          });
+        }}
+      >
+        Convert
+      </button>}>
           <Editor
             height="70vh"
             defaultLanguage={lang}
             defaultValue={data}
-            theme="vs-dark"
+            theme="light"
             onChange={(value) => {
               onChange(value.replace(/[\r\n\t]/gm, ""));
             }}
           />
-          <Button
-            variant="primary"
-            onClick={() => {
-              runInAction(() => {
-                getTransFormedData();
-                console.log(next);
-                navigate(next);
-              });
-            }}
-          >
-            Convert
-          </Button>
-        </Card.Body>
-      </Card>
+      </CustomContainer>
     );
   }
 );

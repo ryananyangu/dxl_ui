@@ -1,9 +1,10 @@
 import { runInAction } from "mobx";
 import { observer } from "mobx-react";
 import { useContext, useState } from "react";
-import { Button, Row, InputGroup, Card } from "react-bootstrap";
+import { Button, Row, InputGroup } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { GlobalContext } from "../data/State";
+import { CustomContainer } from "./customContainer";
 import CustomDropdown from "./CustomDropDown";
 import { ListSelected } from "./ListSelected";
 
@@ -25,9 +26,13 @@ const InOutRequestMap = observer(() => {
   };
 
   return (
-    <Card>
-      <Card.Header>{"In to Out Request Map"}</Card.Header>
-      <Card.Body>
+    <CustomContainer title="In to Out Request Map" controls={<button
+      onClick={() => {
+        navigate("/statics");
+      }}
+    >
+      Next
+    </button>}>
         <Row>
           <InputGroup className="mb-3">
             <CustomDropdown
@@ -61,17 +66,7 @@ const InOutRequestMap = observer(() => {
             });
           }}
         />
-      </Card.Body>
-      <Card.Footer>
-        <Button
-          onClick={() => {
-            navigate("/statics");
-          }}
-        >
-          Next
-        </Button>
-      </Card.Footer>
-    </Card>
+    </CustomContainer>
   );
 });
 
