@@ -1,18 +1,28 @@
 import React, { useContext } from "react";
-import { Form, Button, Card } from "react-bootstrap";
+import { Form } from "react-bootstrap";
 import { GlobalContext } from "../data/State";
 import { observer } from "mobx-react";
 import { runInAction } from "mobx";
 import { useNavigate } from "react-router-dom";
 import { ObjectID } from "bson";
+import { CustomContainer } from "./customContainer";
 export const RequestBasics = observer(() => {
   const config = useContext(GlobalContext);
   const navigate = useNavigate();
 
   return (
-    <Card>
-      <Card.Header>{"Request Basics"}</Card.Header>
-      <Card.Body>
+    <CustomContainer title="Request Basics" controls={<button
+      onClick={() => {
+        runInAction(() => {
+          const id = new ObjectID();
+          config.ServiceCode = id.toString();
+        });
+        //FIXME: Validate the items above have been setup correctly
+        navigate("/headers");
+      }}
+    >
+      Next
+    </button>}>
         <Form>
           <Form.Group className="mb-3" controlId="">
             <Form.Control
@@ -75,21 +85,6 @@ export const RequestBasics = observer(() => {
             />
           </Form.Group>
         </Form>
-      </Card.Body>
-      <Card.Footer>
-        <Button
-          onClick={() => {
-            runInAction(() => {
-              const id = new ObjectID();
-              config.ServiceCode = id.toString();
-            });
-            //FIXME: Validate the items above have been setup correctly
-            navigate("/headers");
-          }}
-        >
-          Next
-        </Button>
-      </Card.Footer>
-    </Card>
+    </CustomContainer>
   );
 });

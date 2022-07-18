@@ -1,54 +1,93 @@
-import { Link } from "react-router-dom";
-import { Navbar, Nav, Container } from "react-bootstrap";
+import styled from "styled-components"
+import { NavLink, Link } from "react-router-dom";
 
-export const CustomNavBar = () => {
+export const CustomNavBar = ({children}) => {
   return (
-    <>
-      <Navbar bg="light" expand="lg">
-        <Container>
-          <Navbar.Brand as={Link} to="/">
-            DXL
-          </Navbar.Brand>
-          <Navbar.Toggle aria-controls="basic-navbar-nav" />
-          <Navbar.Collapse id="basic-navbar-nav">
-            <Nav className="me-auto">
-              <Nav.Link as={Link} to="/">
+      <CustomNavContainer bg="light" expand="lg">
+        <div className="nav-menu">
+            <Link className="title" to="/">DXL</Link>
+              <CustomNavlink to="/">
                 Basics
-              </Nav.Link>
-              <Nav.Link as={Link} to="/headers">
+              </CustomNavlink>
+              <CustomNavlink to="/headers">
                 Headers
-              </Nav.Link>
-              <Nav.Link as={Link} to="/inrequest">
+              </CustomNavlink>
+              <CustomNavlink to="/inrequest">
                 In Request
-              </Nav.Link>
-              <Nav.Link as={Link} to="/outrequest">
+              </CustomNavlink>
+              <CustomNavlink to="/outrequest">
                 Out Request
-              </Nav.Link>
-              <Nav.Link as={Link} to="/requestmap">
+              </CustomNavlink>
+              <CustomNavlink to="/requestmap">
                 Request map
-              </Nav.Link>
-              <Nav.Link as={Link} to="/statics">
+              </CustomNavlink>
+              <CustomNavlink to="/statics">
                 Statics
-              </Nav.Link>
-              <Nav.Link as={Link} to="/outresponse">
+              </CustomNavlink>
+              <CustomNavlink to="/outresponse">
                 Out Response
-              </Nav.Link>
-              <Nav.Link as={Link} to="/inreponse">
+              </CustomNavlink>
+              <CustomNavlink to="/inreponse">
                 In Response
-              </Nav.Link>
-              <Nav.Link as={Link} to="/responsemap">
+              </CustomNavlink>
+              <CustomNavlink to="/responsemap">
                 Response map
-              </Nav.Link>
-              <Nav.Link as={Link} to="/success">
+              </CustomNavlink>
+              <CustomNavlink to="/success">
                 OK Check
-              </Nav.Link>
-              <Nav.Link as={Link} to="/complete">
+              </CustomNavlink>
+              <CustomNavlink to="/complete">
                 Complete
-              </Nav.Link>
-            </Nav>
-          </Navbar.Collapse>
-        </Container>
-      </Navbar>
-    </>
+              </CustomNavlink>
+        </div>
+        <div className="content">
+          {children}
+        </div>
+      </CustomNavContainer>
   );
 };
+
+
+const CustomNavContainer = styled.div`
+  display: flex;
+  border: 2px solid #000000;
+  margin: 2em;
+  .nav-menu {
+    width: 20%;
+    display: flex;
+    flex-direction: column;
+    background-color: #000000;
+    padding: 1em;
+    .title {
+      text-decoration: none;
+      font-size: 2em;
+      color: #0d47a1;
+      &:hover{
+        color: #0d47a1;
+      }
+    }
+  }
+  .content {
+    flex-grow: 1;
+    display: flex;
+  }
+`
+
+const CustomNavlink = styled(NavLink)`
+  color: #ffffff;
+  text-decoration: none;
+  background-color: #444444;
+  margin: 0.25em 0;
+  padding: 0.5em 1em;
+  &.active {
+    background-color: #ffffff;
+    color: #000000;
+    margin-right: -1em;
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px;
+  }
+  &:hover{
+    background-color: #ffffff;
+    color: #000000;
+  }
+`

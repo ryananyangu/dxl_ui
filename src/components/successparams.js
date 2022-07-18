@@ -1,11 +1,12 @@
 import { runInAction } from "mobx";
 import { observer } from "mobx-react";
 import { useContext, useState } from "react";
-import { Card, Button, InputGroup, Form } from "react-bootstrap";
+import { InputGroup, Form } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { GlobalContext } from "../data/State";
 import CustomDropdown from "./CustomDropDown";
 import { SUCCESS_TYPES } from "../utils/constants";
+import { CustomContainer } from "./customContainer";
 
 const OutResponseChecker = observer(() => {
   const [selectedSuccess, setSelectedSuccess] = useState(0);
@@ -13,9 +14,13 @@ const OutResponseChecker = observer(() => {
   const navigate = useNavigate();
   return (
     <>
-      <Card>
-        <Card.Header>{"Out to In Response Map"}</Card.Header>
-        <Card.Body>
+      <CustomContainer title="Out to In Response Map" controls={<button
+            onClick={() => {
+              navigate("/complete");
+            }}
+          >
+            Next
+          </button>}>
           <InputGroup>
             <CustomDropdown
               func={(value) => {
@@ -45,17 +50,7 @@ const OutResponseChecker = observer(() => {
               />
             )}
           </InputGroup>
-        </Card.Body>
-        <Card.Footer>
-          <Button
-            onClick={() => {
-              navigate("/complete");
-            }}
-          >
-            Next
-          </Button>
-        </Card.Footer>
-      </Card>
+      </CustomContainer>
     </>
   );
 });

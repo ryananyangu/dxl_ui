@@ -1,9 +1,10 @@
 import { runInAction } from "mobx";
 import { observer } from "mobx-react";
 import { useContext, useState } from "react";
-import { Button, Card, Form, InputGroup, Row } from "react-bootstrap";
+import { Button, Form, InputGroup, Row } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { GlobalContext } from "../data/State";
+import { CustomContainer } from "./customContainer";
 import CustomDropdown from "./CustomDropDown";
 import { ListSelected } from "./ListSelected";
 
@@ -28,9 +29,13 @@ export const StaticInput = observer(() => {
     setCustomValue("");
   };
   return (
-    <Card>
-      <Card.Header>{"Statics Setup"}</Card.Header>
-      <Card.Body>
+    <CustomContainer title="Statics Setup" controls={<button
+      onClick={() => {
+        navigate("/outresponse");
+      }}
+    >
+      Next
+    </button>}>
         <Row>
           <InputGroup>
             <InputGroup.Text>Custom</InputGroup.Text>
@@ -81,16 +86,6 @@ export const StaticInput = observer(() => {
             });
           }}
         />
-      </Card.Body>
-      <Card.Footer>
-        <Button
-          onClick={() => {
-            navigate("/outresponse");
-          }}
-        >
-          Next
-        </Button>
-      </Card.Footer>
-    </Card>
+    </CustomContainer>
   );
 });

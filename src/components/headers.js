@@ -1,10 +1,11 @@
 import { useState, useContext } from "react";
-import { Form, Button, Row, Card, InputGroup } from "react-bootstrap";
+import { Form, Button, Row, InputGroup } from "react-bootstrap";
 import { ListSelected } from "./ListSelected";
 import { observer } from "mobx-react";
 import { GlobalContext } from "../data/State";
 import { runInAction } from "mobx";
 import { useNavigate } from "react-router-dom";
+import { CustomContainer } from "./customContainer";
 
 const HeaderSetup = observer(() => {
   const Config = useContext(GlobalContext);
@@ -22,9 +23,13 @@ const HeaderSetup = observer(() => {
   };
 
   return (
-    <Card>
-      <Card.Header>{"Headers Setup"}</Card.Header>
-      <Card.Body>
+    <CustomContainer title="Headers Setup" controls={<button
+      onClick={() => {
+        navigate("/inrequest");
+      }}
+    >
+      Next
+    </button>}>
         <Row>
           <InputGroup>
             <Form.Control
@@ -60,17 +65,7 @@ const HeaderSetup = observer(() => {
             delete Config.Headers[itemName];
           }}
         />
-      </Card.Body>
-      <Card.Footer>
-        <Button
-          onClick={() => {
-            navigate("/inrequest");
-          }}
-        >
-          Next
-        </Button>
-      </Card.Footer>
-    </Card>
+    </CustomContainer>
   );
 });
 
