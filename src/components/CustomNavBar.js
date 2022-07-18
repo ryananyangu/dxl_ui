@@ -1,11 +1,11 @@
 import styled from "styled-components"
-import { NavLink } from "react-router-dom";
+import { NavLink, Link } from "react-router-dom";
 
 export const CustomNavBar = ({children}) => {
   return (
       <CustomNavContainer bg="light" expand="lg">
         <div className="nav-menu">
-          
+            <Link className="title" to="/">DXL</Link>
               <CustomNavlink to="/">
                 Basics
               </CustomNavlink>
@@ -58,6 +58,14 @@ const CustomNavContainer = styled.div`
     flex-direction: column;
     background-color: #000000;
     padding: 1em;
+    .title {
+      text-decoration: none;
+      font-size: 2em;
+      color: #0d47a1;
+      &:hover{
+        color: #0d47a1;
+      }
+    }
   }
   .content {
     flex-grow: 1;
