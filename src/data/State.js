@@ -6,30 +6,14 @@ export class GlobalConfig {
     makeAutoObservable(this);
   }
 
-  // NOTE: Payload vars
-  Success = {
-    Code: "",
-    Type: "",
-    Path: "",
-  };
-
   ServiceCode = "";
   Static = {};
   Dynamic = {};
-  ResponseTemplate = "";
-  RequestTemplate = "";
-  ResponseDynamic = {};
+  ResponseBuildScript = "";
+  RequestBuildScript = "";
   Headers = {};
   Endpoint = "";
   HTTPMethod = "";
-  InRequestType = "";
-  OutRequestType = "";
-
-  // None Payload trackers
-  RequestKeys = [];
-  OutRequestValues = [];
-  OutResponseKeys = [];
-  InResponseValues = [];
 }
 
 export const GlobalContext = createContext(null);
