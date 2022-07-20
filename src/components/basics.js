@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { Form } from "react-bootstrap";
+import { Button, Form, InputGroup } from "react-bootstrap";
 import { GlobalContext } from "../data/State";
 import { observer } from "mobx-react";
 import { runInAction } from "mobx";
@@ -11,80 +11,64 @@ export const RequestBasics = observer(() => {
   const navigate = useNavigate();
 
   return (
-    <CustomContainer title="Request Basics" controls={<button
-      onClick={() => {
-        runInAction(() => {
-          const id = new ObjectID();
-          config.ServiceCode = id.toString();
-        });
-        //FIXME: Validate the items above have been setup correctly
-        navigate("/headers");
-      }}
+    <CustomContainer
+      title="Basics setup"
+      controls={
+        <button
+          onClick={() => {
+            runInAction(() => {
+              const id = new ObjectID();
+              config.ServiceCode =
+                "https://api/api/v1/process/post/" + id.toString();
+            });
+            navigate("/headers");
+          }}
+        >
+          Next
+        </button>
+      }
     >
-      Next
-    </button>}>
-        <Form>
-          <Form.Group className="mb-3" controlId="">
-            <Form.Control
-              type="text"
-              placeholder="Out request method"
-              value={config.HTTPMethod}
-              onChange={(e) => {
-                runInAction(() => {
-                  config.HTTPMethod = e.currentTarget.value;
-                });
-              }}
-            />
-          </Form.Group>
-          <Form.Group className="mb-3" controlId="">
-            <Form.Control
-              type="text"
-              placeholder="In request type"
-              value={config.InRequestType}
-              onChange={(e) => {
-                runInAction(() => {
-                  config.InRequestType = e.currentTarget.value;
-                });
-              }}
-            />
-          </Form.Group>
-          <Form.Group className="mb-3" controlId="">
-            <Form.Control
-              type="text"
-              placeholder="Out request type"
-              value={config.OutRequestType}
-              onChange={(e) => {
-                runInAction(() => {
-                  config.OutRequestType = e.currentTarget.value;
-                });
-              }}
-            />
-          </Form.Group>
-          <Form.Group className="mb-3" controlId="">
-            <Form.Control
-              type="text"
-              placeholder="Service code"
-              value={config.ServiceCode}
-              onChange={(e) => {
-                runInAction(() => {
-                  config.ServiceCode = e.currentTarget.value;
-                });
-              }}
-            />
-          </Form.Group>
-          <Form.Group className="mb-3" controlId="">
-            <Form.Control
-              type="text"
-              placeholder="Out request url"
-              value={config.Endpoint}
-              onChange={(e) => {
-                runInAction(() => {
-                  config.Endpoint = e.currentTarget.value;
-                });
-              }}
-            />
-          </Form.Group>
-        </Form>
+      <InputGroup>
+        <Form.Select
+          variant="outline-secondary"
+          onChange={(e) => {
+            console.log(parseInt(e.currentTarget.value));
+          }}
+        >
+          {["--- HTTP METHOD ---", "POST", "GET"].map((item, index) => {
+            return (
+              <option value={index} key={index}>
+                {item}
+              </option>
+            );
+          })}
+        </Form.Select>
+        <Form.Control
+          type="text"
+          placeholder="API endpoint url"
+          value={config.Endpoint}
+          onChange={(e) => {
+            runInAction(() => {
+              config.Endpoint = e.currentTarget.value;
+            });
+          }}
+        />
+      </InputGroup>
+      <br />
+      <InputGroup>
+        <Form.Control
+          disabled
+          type="text"
+          placeholder="Service code auto generated"
+          value={config.ServiceCode}
+          onChange={(e) => {
+            runInAction(() => {
+              config.ServiceCode = e.currentTarget.value;
+            });
+          }}
+        />
+        <Button variant="outline-secondary">Copy Generated url</Button>
+      </InputGroup>
     </CustomContainer>
   );
 });
