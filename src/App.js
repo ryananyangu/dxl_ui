@@ -10,9 +10,9 @@ import { observer } from "mobx-react";
 import { runInAction } from "mobx";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { CustomNavBar } from "./components/CustomNavBar";
-import { CodeEditor } from "./components/CodeEditor";
 import { HTTP_SUCCESS, PROCESS_ADD_URL } from "./utils/constants.js";
 import { CustomContainer } from "./components/customContainer";
+import JSEditor from "./components/JSEditor";
 
 const Config = new GlobalConfig();
 
@@ -63,18 +63,13 @@ const App = observer(() => {
                 exact
                 path="/request"
                 element={
-                  <CodeEditor
-                    header={"Request Build script panel"}
-                    data={"inRequest"}
-                    onChange={(value) => {
-                      // FIXME:
-                      // setInRequest(value);
-                    }}
+                  <JSEditor
+                    header={"Pre send Script"}
                     next={"/response"}
-                    getTransFormedData={() => {
-                      runInAction(async () => {
-                        // FIXME:
-                        console.log("FIXME");
+                    code={Config.RequestBuildScript}
+                    onChange={(code) => {
+                      runInAction(() => {
+                        Config.RequestBuildScript = code;
                       });
                     }}
                   />
@@ -84,20 +79,13 @@ const App = observer(() => {
                 exact
                 path="/response"
                 element={
-                  <CodeEditor
-                    header={"Response build script panel"}
-                    data={"//TODO: Your transformation here"}
-                    onChange={(value) => {
-                      runInAction(() => {
-                        // FIXME:
-                        // Config.RequestTemplate = value;
-                      });
-                    }}
+                  <JSEditor
+                    header={"Post Send Script"}
                     next={"/statics"}
-                    getTransFormedData={() => {
+                    code={Config.ResponseBuildScript}
+                    onChange={(code) => {
                       runInAction(() => {
-                        // FIXME:
-                        // outRequestProcess();
+                        Config.ResponseBuildScript = code;
                       });
                     }}
                   />

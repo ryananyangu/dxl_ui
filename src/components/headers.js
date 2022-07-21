@@ -23,48 +23,53 @@ const HeaderSetup = observer(() => {
   };
 
   return (
-    <CustomContainer title="Headers Setup" controls={<button
-      onClick={() => {
-        navigate("/inrequest");
-      }}
-    >
-      Next
-    </button>}>
-        <Row>
-          <InputGroup>
-            <Form.Control
-              type="text"
-              placeholder="Header name"
-              value={headerName}
-              onChange={(e) => {
-                setHeaderName(e.currentTarget.value);
-              }}
-            />
-            <Form.Control
-              type="text"
-              placeholder="Header value"
-              value={headerValue}
-              onChange={(e) => {
-                setHeaderValue(e.currentTarget.value);
-              }}
-            />
-            <Button
-              variant="success"
-              onClick={(e) => {
-                handleAddMapping(e);
-              }}
-            >
-              +
-            </Button>
-          </InputGroup>
-        </Row>
-        <hr />
-        <ListSelected
-          items={Config.Headers}
-          func={(itemName) => {
-            delete Config.Headers[itemName];
+    <CustomContainer
+      title="Headers Setup"
+      controls={
+        <button
+          onClick={() => {
+            navigate("/statics");
           }}
-        />
+        >
+          Next
+        </button>
+      }
+    >
+      <Row>
+        <InputGroup>
+          <Form.Control
+            type="text"
+            placeholder="Header name"
+            value={headerName}
+            onChange={(e) => {
+              setHeaderName(e.currentTarget.value);
+            }}
+          />
+          <Form.Control
+            type="text"
+            placeholder="Header value"
+            value={headerValue}
+            onChange={(e) => {
+              setHeaderValue(e.currentTarget.value);
+            }}
+          />
+          <Button
+            variant="success"
+            onClick={(e) => {
+              handleAddMapping(e);
+            }}
+          >
+            +
+          </Button>
+        </InputGroup>
+      </Row>
+      <hr />
+      <ListSelected
+        items={Config.Headers}
+        func={(itemName) => {
+          delete Config.Headers[itemName];
+        }}
+      />
     </CustomContainer>
   );
 });

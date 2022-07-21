@@ -8,9 +8,20 @@ import { CustomContainer } from "./customContainer";
 import { useNavigate } from "react-router-dom";
 
 const JSEditor = ({ code, onChange, header, next }) => {
-    const navigate = useNavigate();
+  const navigate = useNavigate();
   return (
-    <CustomContainer>
+    <CustomContainer
+      title={header}
+      controls={
+        <button
+          onClick={() => {
+            navigate(next);
+          }}
+        >
+          Next
+        </button>
+      }
+    >
       <Editor
         value={code}
         onValueChange={(code) => onChange(code)}
@@ -18,9 +29,10 @@ const JSEditor = ({ code, onChange, header, next }) => {
         padding={10}
         style={{
           fontFamily: '"Fira code", "Fira Mono", monospace',
-          fontSize: 12,
+          fontSize: 14,
           width: "100%",
-          height: "70vh",
+          height: "100%",
+          // overflow: "scroll",
         }}
       />
     </CustomContainer>
