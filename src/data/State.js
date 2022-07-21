@@ -8,7 +8,6 @@ export class GlobalConfig {
 
   ServiceCode = "";
   Static = {};
-  Dynamic = {};
   ResponseBuildScript = `const main = (payload) => {
 
   //TODO: Do your transformation for response here

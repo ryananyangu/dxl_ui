@@ -16,7 +16,7 @@ const HeaderSetup = observer(() => {
 
   const handleAddMapping = (e) => {
     runInAction(() => {
-      Config.Headers[headerName] = headerValue;
+      Config.Headers[headerName] = [headerValue];
     });
     setHeaderName("");
     setHeaderValue("");

@@ -9,7 +9,7 @@ export const ListSelected = observer(({ items, func }) => {
           <SelectedItem
             key={index}
             itemName={item}
-            itemValue={items[item]}
+            itemValue={items[item][0]}
             func={func}
           />
         );

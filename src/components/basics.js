@@ -6,6 +6,7 @@ import { runInAction } from "mobx";
 import { useNavigate } from "react-router-dom";
 import { ObjectID } from "bson";
 import { CustomContainer } from "./customContainer";
+import { HTTP_METHODS } from "../utils/constants";
 export const RequestBasics = observer(() => {
   const config = useContext(GlobalContext);
   const navigate = useNavigate();
@@ -18,8 +19,7 @@ export const RequestBasics = observer(() => {
           onClick={() => {
             runInAction(() => {
               const id = new ObjectID();
-              config.ServiceCode =
-                "https://api/api/v1/process/post/" + id.toString();
+              config.ServiceCode = id.toString();
             });
             navigate("/headers");
           }}
@@ -32,10 +32,12 @@ export const RequestBasics = observer(() => {
         <Form.Select
           variant="outline-secondary"
           onChange={(e) => {
-            console.log(parseInt(e.currentTarget.value));
+            runInAction(() => {
+              config.HTTPMethod = HTTP_METHODS[parseInt(e.currentTarget.value)];
+            });
           }}
         >
-          {["POST", "GET"].map((item, index) => {
+          {HTTP_METHODS.map((item, index) => {
             return (
               <option value={index} key={index}>
                 {item}

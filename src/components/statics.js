@@ -10,14 +10,14 @@ import { ListSelected } from "./ListSelected";
 export const StaticInput = observer(() => {
   const Config = useContext(GlobalContext);
   const navigate = useNavigate();
-  const [selectedInput, setSelectedInput] = useState(0);
+  // const [selectedInput, setSelectedInput] = useState(0);
   const [staticValue, setStaticValue] = useState("");
   const [customValue, setCustomValue] = useState("");
 
   const handleAddMapping = (e) => {
-    let val = Config.OutRequestValues[selectedInput];
-    Config.Static[val] = staticValue;
-    setSelectedInput(0);
+    // let val = Config.OutRequestValues[selectedInput];
+    Config.Static[customValue] = staticValue;
+    // setSelectedInput(0);
     setStaticValue("");
     setCustomValue("");
   };

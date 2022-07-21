@@ -50,5 +50,5 @@
   "resolutions": {
     "autoprefixer": "10.4.5"
   },
-  "proxy": "http://api:8080/api/v1"
+  "proxy": "http://api:8080/api/v1/"
 }

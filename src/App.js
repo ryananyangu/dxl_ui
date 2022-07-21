@@ -81,7 +81,7 @@ const App = observer(() => {
                 element={
                   <JSEditor
                     header={"Post Send Script"}
-                    next={"/statics"}
+                    next={"/complete"}
                     code={Config.ResponseBuildScript}
                     onChange={(code) => {
                       runInAction(() => {
@@ -101,6 +101,7 @@ const App = observer(() => {
                       controls={
                         <button
                           onClick={async () => {
+                            console.log(JSON.stringify(Config));
                             let resp = await sendPostRequest(
                               JSON.stringify(Config),
                               { "Content-Type": "application/json" },
