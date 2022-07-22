@@ -10,15 +10,23 @@ import { observer } from "mobx-react";
 import { runInAction } from "mobx";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { CustomNavBar } from "./components/CustomNavBar";
-import { HTTP_SUCCESS, PROCESS_ADD_URL } from "./utils/constants.js";
+import {
+  HTTP_METHODS,
+  HTTP_SUCCESS,
+  PROCESS_ADD_URL,
+  PAYMENT_TEST_URL,
+} from "./utils/constants.js";
 import { CustomContainer } from "./components/customContainer";
 import JSEditor from "./components/JSEditor";
 
 const Config = new GlobalConfig();
 
 const App = observer(() => {
-  // const [inRequest, setInRequest] = useState("");
   const [errMsg, setErrMsg] = useState("");
+  const [code, setCode] = useState(
+    "//TODO: Paste sample request payload here as"
+  );
+  Config.HTTPMethod = HTTP_METHODS[0];
 
   const sendPostRequest = async (payload, headers, url) => {
     let final_response = {};
@@ -108,13 +116,31 @@ const App = observer(() => {
                               PROCESS_ADD_URL
                             );
                             console.log(resp);
+                            if (resp.error) {
+                              setErrMsg(resp.error);
+                              return;
+                            }
+                            let testResp = await sendPostRequest(
+                              code,
+                              { "Content-Type": "application/json" },
+                              PAYMENT_TEST_URL + Config.ServiceCode
+                            );
+                            if (testResp.error) {
+                              setErrMsg(testResp.error);
+                            }
+                            console.log(testResp);
                           }}
                         >
                           Check
                         </button>
                       }
                     >
-                      Comming soon !!!
+                      <JSEditor
+                        code={code}
+                        header={"Test Settings"}
+                        onChange={setCode}
+                        next={"/complete"}
+                      />
                     </CustomContainer>
                   </>
                 }
