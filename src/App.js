@@ -74,10 +74,10 @@ const App = observer(() => {
                   <JSEditor
                     header={"Pre send Script"}
                     next={"/response"}
-                    code={Config.RequestBuildScript}
+                    code={Config.PreScript}
                     onChange={(code) => {
                       runInAction(() => {
-                        Config.RequestBuildScript = code;
+                        Config.PreScript = code;
                       });
                     }}
                   />
@@ -90,10 +90,10 @@ const App = observer(() => {
                   <JSEditor
                     header={"Post Send Script"}
                     next={"/complete"}
-                    code={Config.ResponseBuildScript}
+                    code={Config.PostScript}
                     onChange={(code) => {
                       runInAction(() => {
-                        Config.ResponseBuildScript = code;
+                        Config.PostScript = code;
                       });
                     }}
                   />
@@ -123,7 +123,7 @@ const App = observer(() => {
                             let testResp = await sendPostRequest(
                               code,
                               { "Content-Type": "application/json" },
-                              PAYMENT_TEST_URL + Config.ServiceCode
+                              PAYMENT_TEST_URL + Config.Code
                             );
                             if (testResp.error) {
                               setErrMsg(testResp.error);

@@ -16,7 +16,7 @@ export const StaticInput = observer(() => {
 
   const handleAddMapping = (e) => {
     // let val = Config.OutRequestValues[selectedInput];
-    Config.Static[customValue] = staticValue;
+    Config.Statics[customValue] = staticValue;
     // setSelectedInput(0);
     setStaticValue("");
     setCustomValue("");
@@ -46,7 +46,7 @@ export const StaticInput = observer(() => {
           />
           <Form.Control
             type="text"
-            placeholder="Static value"
+            placeholder="Statics value"
             value={staticValue}
             onChange={(e) => {
               setStaticValue(e.target.value);
@@ -64,10 +64,10 @@ export const StaticInput = observer(() => {
       </Row>
       <hr />
       <ListSelected
-        items={Config.Static}
+        items={Config.Statics}
         func={(staticVal) => {
           runInAction(() => {
-            delete Config.Static[staticVal];
+            delete Config.Statics[staticVal];
           });
         }}
       />

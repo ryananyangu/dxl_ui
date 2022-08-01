@@ -6,9 +6,14 @@ export class GlobalConfig {
     makeAutoObservable(this);
   }
 
-  ServiceCode = "";
-  Static = {};
-  ResponseBuildScript = `const main = (payload) => {
+  Name = "";
+  Description = "";
+  Code = "";
+  Status = 1;
+  Country = 2;
+  Environment = "PRODUCTION";
+  Statics = {};
+  PostScript = `const main = (payload) => {
 
   //TODO: Do your transformation for response here
   return {
@@ -20,7 +25,7 @@ export class GlobalConfig {
     metadata: {},
   };
 };`;
-  RequestBuildScript = `const main = (payload, headers, constants, client) => {
+  PreScript = `const main = (payload, headers, constants, client) => {
   const {
     MSISDN,
     accountNumber,

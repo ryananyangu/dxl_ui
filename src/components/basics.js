@@ -19,7 +19,7 @@ export const RequestBasics = observer(() => {
           onClick={() => {
             runInAction(() => {
               const id = new ObjectID();
-              config.ServiceCode = id.toString();
+              config.Code = id.toString();
             });
             navigate("/headers");
           }}
